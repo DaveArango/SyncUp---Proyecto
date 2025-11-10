@@ -1,5 +1,6 @@
 package co.uniquindio.proyecto.syncup.entidades;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
@@ -38,6 +39,7 @@ public class Cancion {
 
     @ManyToMany(mappedBy = "listaFavoritos")
     @JsonIgnoreProperties("listaFavoritos")
+    @JsonIgnore
     private List<Usuario> oyentes = new ArrayList<>();
 
     private String rutaArchivo;

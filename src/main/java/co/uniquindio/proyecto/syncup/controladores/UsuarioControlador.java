@@ -2,6 +2,7 @@ package co.uniquindio.proyecto.syncup.controladores;
 
 import co.uniquindio.proyecto.syncup.entidades.Cancion;
 import co.uniquindio.proyecto.syncup.entidades.Usuario;
+import co.uniquindio.proyecto.syncup.servicios.GrafoSocialServicio;
 import co.uniquindio.proyecto.syncup.servicios.UsuarioServicio;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,15 +11,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuario")
 public class UsuarioControlador {
 
     private final UsuarioServicio usuarioServicio;
+    private final GrafoSocialServicio grafoSocialServicio;
 
-    public UsuarioControlador(UsuarioServicio usuarioServicio) {
+    public UsuarioControlador(UsuarioServicio usuarioServicio, GrafoSocialServicio grafoSocialServicio) {
         this.usuarioServicio = usuarioServicio;
+        this.grafoSocialServicio = grafoSocialServicio;
     }
 
     // ================= AUTENTICACIÓN =================
@@ -101,28 +105,40 @@ public class UsuarioControlador {
     @PostMapping("/{username}/favoritos")
     public ResponseEntity<Usuario> agregarFavorito(
             @PathVariable String username,
-            @RequestBody Cancion cancion
+            @RequestBody Map<String, Long> body
     ) {
-        return ResponseEntity.ok(usuarioServicio.agregarFavorito(username, cancion));
+        Long idCancion = body.get("id");
+        return ResponseEntity.ok(usuarioServicio.agregarFavorito(username, idCancion));
     }
 
-    @DeleteMapping("/{username}/favoritos")
+
+    @DeleteMapping("/{username}/favoritos/eliminar")
     public ResponseEntity<Usuario> eliminarFavorito(
             @PathVariable String username,
-            @RequestBody Cancion cancion
+            @RequestBody Map<String, Long> body
     ) {
-        return ResponseEntity.ok(usuarioServicio.eliminarFavorito(username, cancion));
+        Long idCancion = body.get("id");
+        return ResponseEntity.ok(usuarioServicio.eliminarFavorito(username, idCancion));
     }
 
     // ================= RED SOCIAL =================
 
     @PostMapping("/{username}/seguir/{seguido}")
-    public ResponseEntity<Void> seguirUsuario(
+    public ResponseEntity<String> seguirUsuario(
             @PathVariable String username,
             @PathVariable String seguido
     ) {
-        usuarioServicio.seguirUsuario(username, seguido);
-        return ResponseEntity.ok().build();
+        try {
+            usuarioServicio.seguirUsuario(username, seguido);
+            return ResponseEntity.ok("Usuario seguido correctamente");
+        } catch (RuntimeException e) {
+            // Puedes afinar el mensaje según la excepción
+            if (e.getMessage().equals("Usuario a seguir no encontrado")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno");
+            }
+        }
     }
 
     @PostMapping("/{username}/dejarDeSeguir/{seguido}")
@@ -136,7 +152,9 @@ public class UsuarioControlador {
 
     @GetMapping("/{username}/sugerencias")
     public ResponseEntity<List<Usuario>> sugerencias(@PathVariable String username) {
-        return ResponseEntity.ok(usuarioServicio.sugerirUsuarios(username));
+        Usuario usuario = usuarioServicio.obtenerUsuario(username); // método en UsuarioServicio
+        List<Usuario> sugerencias = grafoSocialServicio.sugerirAmigos(usuario);
+        return ResponseEntity.ok(sugerencias);
     }
 
     // ================= LISTAR USUARIOS =================

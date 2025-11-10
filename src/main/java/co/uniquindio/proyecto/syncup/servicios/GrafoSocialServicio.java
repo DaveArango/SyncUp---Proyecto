@@ -4,6 +4,7 @@ import co.uniquindio.proyecto.syncup.entidades.Usuario;
 import co.uniquindio.proyecto.syncup.grafos.GrafoUsuario;
 import co.uniquindio.proyecto.syncup.grafos.NodoUsuario;
 import co.uniquindio.proyecto.syncup.repositorios.UsuarioRepositorio;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class GrafoSocialServicio {
         this.usuarioRepositorio = usuarioRepositorio;
     }
 
+    @Transactional
     public void construirGrafo() {
         List<Usuario> usuarios = usuarioRepositorio.findAll();
         usuarios.forEach(grafo::agregarNodo);

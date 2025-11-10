@@ -1,11 +1,14 @@
 package co.uniquindio.proyecto.syncup.controladores;
 
 import co.uniquindio.proyecto.syncup.entidades.Usuario;
+import co.uniquindio.proyecto.syncup.grafos.NodoUsuario;
 import co.uniquindio.proyecto.syncup.repositorios.UsuarioRepositorio;
 import co.uniquindio.proyecto.syncup.servicios.GrafoSocialServicio;
+import jakarta.annotation.PostConstruct;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -20,6 +23,12 @@ public class GrafoSocialControlador {
         this.grafoSocialServicio = grafoSocialServicio;
         this.usuarioRepositorio = usuarioRepositorio;
     }
+
+    @PostConstruct
+    public void init() {
+        construirGrafo(); // llena el grafo con todos los usuarios
+    }
+
 
     @PostMapping("/construir")
     public ResponseEntity<String> construirGrafo() {

@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/canciones")
@@ -58,19 +59,20 @@ public class CancionAdminControlador {
         return ResponseEntity.ok(cGuardada);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/actualizar/{id}")
     public ResponseEntity<Cancion> actualizar(@PathVariable Long id, @RequestBody Cancion c) {
         return ResponseEntity.ok(cancionServicio.actualizarCancion(id, c));
     }
 
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<Map<String, String>> eliminar(@PathVariable Long id) {
         cancionServicio.eliminarCancion(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Map.of("mensaje", "Canción eliminada correctamente"));
     }
 
-    @GetMapping
+
+    @GetMapping("/listar")
     public ResponseEntity<List<Cancion>> listar() {
         return ResponseEntity.ok(cancionServicio.listarTodas());
     }

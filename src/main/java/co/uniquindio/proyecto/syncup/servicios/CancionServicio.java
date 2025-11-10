@@ -8,9 +8,7 @@ import co.uniquindio.proyecto.syncup.repositorios.CancionRepositorio;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -58,19 +56,20 @@ public class CancionServicio {
     }
 
 
-    public Cancion actualizarCancion(Long id,
-                                     Cancion nuevaCancion) {
+    public Cancion actualizarCancion(Long id, Cancion nuevaCancion) {
         Cancion c = cancionRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Canción no encontrada"));
-        c.setTitulo(nuevaCancion.getTitulo());
-        c.setArtista(nuevaCancion.getArtista());
-        c.setGenero(nuevaCancion.getGenero());
-        c.setAnio(nuevaCancion.getAnio());
-        c.setDuracion(nuevaCancion.getDuracion());
+        if (nuevaCancion.getTitulo() != null) c.setTitulo(nuevaCancion.getTitulo());
+        if (nuevaCancion.getArtista() != null) c.setArtista(nuevaCancion.getArtista());
+        if (nuevaCancion.getGenero() != null) c.setGenero(nuevaCancion.getGenero());
+        if (nuevaCancion.getAnio() != null) c.setAnio(nuevaCancion.getAnio());
+        if (nuevaCancion.getDuracion() != null) c.setDuracion(nuevaCancion.getDuracion());
+        if (nuevaCancion.getRutaArchivo() != null) c.setRutaArchivo(nuevaCancion.getRutaArchivo());
         cancionRepositorio.save(c);
         construirGrafoSimilitud();
         return c;
     }
+
 
     public void eliminarCancion(Long id) {
         cancionRepositorio.deleteById(id);
@@ -81,14 +80,26 @@ public class CancionServicio {
         return cancionRepositorio.findAll();
     }
 
-    public List<Cancion> descubrimientoSemanal(Usuario usuario,
-                                               int max) {
+    public List<Cancion> descubrimientoSemanal(Usuario usuario, int max) {
+        // Evitar error si no tiene favoritos
+        if (usuario.getListaFavoritos() == null || usuario.getListaFavoritos().isEmpty()) {
+            return new ArrayList<>();
+        }
+
         Set<Cancion> favoritos = new HashSet<>(usuario.getListaFavoritos());
         Set<Cancion> recomendadas = new LinkedHashSet<>();
+
         for (Cancion fav : favoritos) {
-            NodoCancion nodo = grafoSimilitudServicio.getGrafo()
-                    .obtenerNodo(fav);
+            // Evitar error si el grafo no está inicializado
+            if (grafoSimilitudServicio.getGrafo() == null) {
+                throw new RuntimeException("El grafo de similitud no está inicializado");
+            }
+
+            NodoCancion nodo = grafoSimilitudServicio.getGrafo().obtenerNodo(fav);
+            if (nodo == null) continue; // Si la canción no está en el grafo
+
             Map<NodoCancion, Double> similares = grafoSimilitudServicio.dijkstra(nodo);
+
             similares.entrySet().stream()
                     .sorted((a, b) -> Double.compare(b.getValue(), a.getValue())) // mayor similitud primero
                     .map(entry -> entry.getKey().getCancion())
@@ -97,7 +108,9 @@ public class CancionServicio {
 
             if (recomendadas.size() >= max) break;
         }
-        return new ArrayList<>(recomendadas).subList(0, Math.min(max, recomendadas.size()));
+
+        List<Cancion> listaFinal = new ArrayList<>(recomendadas);
+        return listaFinal.subList(0, Math.min(max, listaFinal.size()));
     }
 
     public Queue<Cancion> iniciarRadio(Cancion cancionInicio, int max) {
@@ -107,7 +120,7 @@ public class CancionServicio {
                 .obtenerNodo(cancionInicio);
         Map<NodoCancion, Double> similares = grafoSimilitudServicio.dijkstra(nodo);
         similares.entrySet().stream()
-                .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
+                .sorted(Map.Entry.comparingByValue()) // ordena de menor a mayor
                 .map(entry -> entry.getKey().getCancion())
                 .filter(c -> !c.equals(cancionInicio))
                 .limit(max)
@@ -118,20 +131,6 @@ public class CancionServicio {
 
     public List<String> autocompletar(String prefijo) {
         return trieServicio.autocompletar(prefijo);
-    }
-
-    public void exportarFavoritosCSV(Usuario usuario, String rutaArchivo) throws Exception {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(rutaArchivo))) {
-            writer.println("Titulo,Artista,Genero,Anio,Duracion");
-            for (Cancion c : usuario.getListaFavoritos()) {
-                writer.printf("%s,%s,%s,%d,%f%n",
-                        c.getTitulo(),
-                        c.getArtista(),
-                        c.getGenero(),
-                        c.getAnio(),
-                        c.getDuracion());
-            }
-        }
     }
 
     public String guardarArchivo(MultipartFile archivo) {

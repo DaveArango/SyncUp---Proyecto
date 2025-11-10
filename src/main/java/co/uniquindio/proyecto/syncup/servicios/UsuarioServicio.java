@@ -2,7 +2,9 @@ package co.uniquindio.proyecto.syncup.servicios;
 
 import co.uniquindio.proyecto.syncup.entidades.Cancion;
 import co.uniquindio.proyecto.syncup.entidades.Usuario;
+import co.uniquindio.proyecto.syncup.repositorios.CancionRepositorio;
 import co.uniquindio.proyecto.syncup.repositorios.UsuarioRepositorio;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -12,11 +14,15 @@ public class UsuarioServicio {
 
     private final UsuarioRepositorio usuarioRepositorio;
     private final GrafoSocialServicio grafoSocialServicio;
+    private final CancionRepositorio cancionRepositorio;
+
 
     public UsuarioServicio(UsuarioRepositorio usuarioRepositorio,
-                           GrafoSocialServicio grafoSocialServicio) {
+                           GrafoSocialServicio grafoSocialServicio,
+                           CancionRepositorio cancionRepositorio) {
         this.usuarioRepositorio = usuarioRepositorio;
         this.grafoSocialServicio = grafoSocialServicio;
+        this.cancionRepositorio = cancionRepositorio;
     }
 
     // =============== AUTENTICACIÓN ===============
@@ -55,40 +61,61 @@ public class UsuarioServicio {
         return usuarioRepositorio.save(usuario);
     }
 
-
-    public Usuario agregarFavorito(String username, Cancion cancion) {
+    @Transactional
+    public Usuario agregarFavorito(String username, Long idCancion) {
         Usuario usuario = usuarioRepositorio.findById(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Cancion cancion = cancionRepositorio.findById(idCancion)
+                .orElseThrow(() -> new RuntimeException("Canción no encontrada"));
+
         usuario.getListaFavoritos().add(cancion);
         return usuarioRepositorio.save(usuario);
     }
 
-    public Usuario eliminarFavorito(String username, Cancion cancion) {
+
+    @Transactional
+    public Usuario eliminarFavorito(String username, Long idCancion) {
         Usuario usuario = usuarioRepositorio.findById(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Cancion cancion = cancionRepositorio.findById(idCancion)
+                .orElseThrow(() -> new RuntimeException("Canción no encontrada"));
+
         usuario.getListaFavoritos().remove(cancion);
         return usuarioRepositorio.save(usuario);
     }
 
     // =============== RED SOCIAL ===============
 
+    @Transactional
     public void seguirUsuario(String username, String seguido) {
-        Usuario u1 = usuarioRepositorio.findById(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        Usuario u2 = usuarioRepositorio.findById(seguido)
-                .orElseThrow(() -> new RuntimeException("Usuario a seguir no encontrado"));
+        Usuario u1 = usuarioRepositorio.findById(username).orElse(null);
+        Usuario u2 = usuarioRepositorio.findById(seguido).orElse(null);
 
-        grafoSocialServicio.agregarConexion(u1, u2);
+        if (u1 == null) throw new RuntimeException("Usuario no encontrado: " + username);
+        if (u2 == null) throw new RuntimeException("Usuario a seguir no encontrado: " + seguido);
+
+        u1.getAmigos().add(u2);
+        usuarioRepositorio.save(u1);
     }
 
+
+    @Transactional
     public void dejarDeSeguir(String username, String seguido) {
         Usuario u1 = usuarioRepositorio.findById(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
         Usuario u2 = usuarioRepositorio.findById(seguido)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario a dejar de seguir no encontrado: " + seguido));
 
-        grafoSocialServicio.eliminarConexion(u1, u2);
+        if (u1.getListaFavoritos().contains(u2)) {
+            u1.getListaFavoritos().remove(u2);
+            usuarioRepositorio.save(u1);
+        } else {
+            System.out.println("El usuario " + username + " no sigue a " + seguido);
+        }
     }
+
 
     public List<Usuario> sugerirUsuarios(String username) {
         Usuario usuario = usuarioRepositorio.findById(username)
@@ -97,12 +124,16 @@ public class UsuarioServicio {
     }
 
     public List<Usuario> listarTodos() {
-        try {
-            return usuarioRepositorio.findAll();
-        } catch (Exception e) {
-            e.printStackTrace(); // 👈 imprime el error en consola
-            throw e;             // lo vuelve a lanzar
-        }
+        List<Usuario> lista = usuarioRepositorio.findAll();
+        System.out.println("Usuarios en BD:");
+        lista.forEach(u -> System.out.println(" - " + u.getUsername()));
+        return lista;
     }
+
+    public Usuario obtenerUsuario(String username) {
+        return usuarioRepositorio.findById(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
 
 }
