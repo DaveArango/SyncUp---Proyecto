@@ -8,7 +8,7 @@
   <div class="songs-grid">
     <div *ngFor="let song of favorites()" class="song-card">
       <h3>{{ song.title }}</h3>
-      <p>{{ song.artist }}</p>
+      <p>{{ song.artista }}</p> <!-- CORRECCIÓN: artista en vez de artist -->
       <button (click)="removeFromFavorites(song.id)">Eliminar</button>
     </div>
   </div>

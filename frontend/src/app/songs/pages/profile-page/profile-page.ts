@@ -1,38 +1,33 @@
 import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../../auth/services/auth.service';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-profile-page',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './profile-page.html',
-  styleUrls: ['./profile-page.css'],
+  styleUrls: ['./profile-page.css']
 })
 export default class ProfilePage {
   fb = inject(FormBuilder);
   authService = inject(AuthService);
   router = inject(Router);
 
+  isLoading = signal(true);
   hasError = signal(false);
   success = signal(false);
-  isLoading = signal(true);
-
-  user = this.authService.user();
 
   profileForm = this.fb.group({
-    name: ['', [Validators.required]],
-    password: ['', [Validators.minLength(6)]],
+    name: ['', [Validators.required, Validators.minLength(3)]],
+    password: ['', [Validators.minLength(6)]]
   });
 
   constructor() {
-    // traer datos del backend
-    this.authService.getProfile().subscribe((user) => {
-      if (user) {
-        this.profileForm.patchValue({ name: user.name });
-      }
+    this.authService.getProfile().subscribe(user => {
+      if (user) this.profileForm.patchValue({ name: user.name });
       this.isLoading.set(false);
     });
   }
@@ -44,17 +39,20 @@ export default class ProfilePage {
       return;
     }
 
-    const { name, password } = this.profileForm.value;
-    this.authService.updateProfile({ name: name || '', password: password || '' })
-      .subscribe((updatedUser) => {
-        if (updatedUser) {
-          this.success.set(true);
-          setTimeout(() => this.success.set(false), 2000);
-        } else {
-          this.hasError.set(true);
-          setTimeout(() => this.hasError.set(false), 2000);
-        }
-      });
+    const { name, password } = this.profileForm.value as { name: string; password: string };
+    const updateData: { name: string; password?: string } = { name };
+    if (password && password.trim().length > 0) updateData.password = password;
+
+    this.authService.updateProfile(updateData).subscribe(updatedUser => {
+      if (updatedUser) {
+        this.success.set(true);
+        this.profileForm.patchValue({ name: updatedUser.name, password: '' });
+        setTimeout(() => this.success.set(false), 2000);
+      } else {
+        this.hasError.set(true);
+        setTimeout(() => this.hasError.set(false), 2000);
+      }
+    });
   }
 
   logout() {

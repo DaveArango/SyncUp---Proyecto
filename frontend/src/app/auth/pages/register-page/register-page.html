@@ -2,29 +2,14 @@
   <h1 class="title">Crear cuenta</h1>
 
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="form">
-    <label>Nombre</label>
-    <input
-      type="text"
-      formControlName="name"
-      placeholder="Tu nombre"
-      class="input"
-    />
+    <label>Usuario</label>
+    <input type="text" formControlName="username" placeholder="Tu usuario" class="input" />
 
-    <label>Correo electrónico</label>
-    <input
-      type="email"
-      formControlName="email"
-      placeholder="Tu correo"
-      class="input"
-    />
+    <label>Nombre</label>
+    <input type="text" formControlName="nombre" placeholder="Tu nombre" class="input" />
 
     <label>Contraseña</label>
-    <input
-      type="password"
-      formControlName="password"
-      placeholder="Tu contraseña"
-      class="input"
-    />
+    <input type="password" formControlName="password" placeholder="Tu contraseña" class="input" />
 
     <button type="submit" class="btn">Registrarme</button>
 
@@ -34,8 +19,7 @@
     </p>
   </form>
 
-  <!-- Mostrar alerta solo si hasError es true -->
   <div *ngIf="hasError" class="alert-error">
-    <span> Por favor revise la información ingresada.</span>
+    <span>{{ errorMessage }}</span>
   </div>
 </div>

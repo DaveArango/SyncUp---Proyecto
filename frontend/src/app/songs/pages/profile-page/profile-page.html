@@ -3,14 +3,19 @@
 
   <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="form">
     <label>Nombre</label>
-    <input type="text" formControlName="name" class="input" />
+    <input
+      type="text"
+      formControlName="name"
+      class="input"
+      placeholder="Ingresa tu nombre"
+    />
 
     <label>Nueva contraseña</label>
     <input
       type="password"
       formControlName="password"
-      placeholder="Dejar vacío si no cambia"
       class="input"
+      placeholder="Dejar vacío si no cambia"
     />
 
     <button type="submit" class="btn">Actualizar perfil</button>

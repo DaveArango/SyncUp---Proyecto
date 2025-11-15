@@ -1,15 +1,11 @@
-<form
-  class="login-form"
-  [formGroup]="loginForm"
-  (ngSubmit)="onSubmit()"
->
+<form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
   <div class="form-group">
-    <label for="email">Correo electrónico</label>
+    <label for="username">Usuario</label>
     <input
-      id="email"
-      type="email"
-      placeholder="Ingresa tu correo"
-      formControlName="email"
+      id="username"
+      type="text"
+      placeholder="Ingresa tu usuario"
+      formControlName="username"
     />
   </div>
 
@@ -23,7 +19,7 @@
     />
   </div>
 
-  <button type="submit" class="login-btn">Iniciar sesión</button>
+  <button type="submit" class="login-btn" [disabled]="isPosting()">Iniciar sesión</button>
 
   <p class="register-text">
     ¿No tienes cuenta?
@@ -31,8 +27,6 @@
   </p>
 </form>
 
-@if (hasError()) {
-<div class="alert-error">
-  <span> Por favor revise la información ingresada.</span>
+<div *ngIf="hasError()" class="alert-error">
+  <span>{{ errorMessage() }}</span>
 </div>
-}

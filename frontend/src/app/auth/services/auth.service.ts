@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { catchError, map, Observable, of, tap } from 'rxjs';
+import {catchError, map, Observable, of, tap, throwError} from 'rxjs';
 import { User } from '../interfaces/user.interface';
 import { AuthResponse } from '../interfaces/auth-response.interface';
 import { environment } from '../../../environments/environment';
@@ -26,22 +26,45 @@ export class AuthService {
   token = computed(this._token);
 
   // ---------------- LOGIN ----------------
-  login(email: string, password: string): Observable<boolean> {
-    return this.http
-      .post<AuthResponse>(`${baseUrl}/usuario/login`, { email, password })
+  login(username: string, password: string) {
+    const params = new HttpParams()
+      .set('username', username)
+      .set('password', password);
+
+    return this.http.post<any>(`${baseUrl}/usuario/login`, null, { params })
       .pipe(
-        map((resp) => this.handleAuthSuccess(resp)),
-        catchError((error) => this.handleAuthError(error))
+        tap(resp => {
+          if (resp?.usuario) {
+            // Guardamos el usuario correctamente
+            this._user.set({
+              id: '',          // opcional
+              name: resp.usuario.nombre,
+              email: resp.usuario.email,       // opcional
+              isActive: true,  // opcional
+              role: 'user'     // opcional
+            });
+          }
+        }),
+        map(() => true),
+        catchError(err => throwError(() => err))
       );
   }
 
   // ---------------- REGISTER ----------------
-  register(name: string, email: string, password: string): Observable<boolean> {
-    return this.http
-      .post<AuthResponse>(`${baseUrl}/auth/register`, { name, email, password })
+  register(username: string, nombre: string, password: string): Observable<boolean> {
+    const body = {
+      username,  // va el username
+      nombre,    // va el nombre real
+      password
+    };
+
+    return this.http.post(`${baseUrl}/usuario/registrar`, body)
       .pipe(
-        map((resp) => this.handleAuthSuccess(resp)),
-        catchError((error) => this.handleAuthError(error))
+        map(() => true),
+        catchError((error) => {
+          console.error('Error registrando usuario:', error);
+          return of(false);
+        })
       );
   }
 
@@ -62,37 +85,35 @@ export class AuthService {
         catchError((error) => this.handleAuthError(error))
       );
   }
-
   // ---------------- GET PROFILE ----------------
   getProfile(): Observable<User | null> {
-    const token = this._token();
-    if (!token) return of(null);
+    const username = this._user()?.email; // aquí usamos username
+    if (!username) return of(null);
 
-    return this.http
-      .get<User>(`${baseUrl}/usuario/perfil`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    return this.http.get<User>(`${baseUrl}/usuario/perfil/${username}`)
       .pipe(
-        tap((user) => this._user.set(user)),
+        tap(user => this._user.set(user)),
         catchError(() => of(null))
       );
   }
-
   // ---------------- UPDATE PROFILE ----------------
   updateProfile(data: { name?: string; password?: string }): Observable<User | null> {
-    const token = this._token();
-    if (!token) return of(null);
+    const user = this._user();
+    if (!user || !user.email) return of(null);
 
-    return this.http
-      .put<User>(`${baseUrl}/users/update`, data, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    let params = new HttpParams();
+    if (data.name) params = params.set('nombre', data.name);
+    if (data.password) params = params.set('password', data.password);
+
+    return this.http.put<User>(`${baseUrl}/usuario/perfil/${user.email}`, null, { params })
       .pipe(
-        tap((user) => this._user.set(user)), // actualizar el usuario local
-        catchError(() => of(null))
+        tap(u => this._user.set(u)),
+        catchError(err => {
+          console.error('Error actualizando perfil:', err);
+          return of(null);
+        })
       );
   }
-
   // ---------------- LOGOUT ----------------
   logout() {
     this._user.set(null);
@@ -121,4 +142,3 @@ export class AuthService {
     return !!user && user.role === 'admin'; // o como definas el rol en tu User interface
   }
 }
-

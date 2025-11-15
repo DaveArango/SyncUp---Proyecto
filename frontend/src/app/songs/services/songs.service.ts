@@ -41,13 +41,6 @@ export class SongService {
       });
   }
 
-
-  searchSongs(query: string) {
-    return this.http.get<Song[]>(`${environment.baseUrl}/usuario/canciones/reproducir-nombre`, {
-      params: { nombre: query },
-    });
-  }
-
   getWeeklyDiscoveryFromAPI() {
     return this.http.get<Song[]>(`${environment.baseUrl}/discovery/weekly`);
   }
@@ -66,16 +59,18 @@ export class SongService {
     });
   }
 
-  playSongByName(nombre: string) {
-    return this.http.get<Song[]>(`${environment.baseUrl}/usuario/canciones/reproducir-nombre`, {
-      params: { nombre }
-    });
-  }
-
   searchSongsByName(nombre: string) {
     return this.http.get<Song[]>(`${environment.baseUrl}/usuario/canciones/buscar-por-nombre`, {
       params: { nombre }
     });
+  }
+
+  getFavorites(userId: string) {
+    return this.http.get<Song[]>(`${environment.baseUrl}/usuario/canciones/listar-favoritos/${userId}`);
+  }
+
+  removeFavorite(userId: string, songId: number) {
+    return this.http.delete(`${environment.baseUrl}/usuario/canciones/favoritos/${userId}/${songId}`);
   }
 
 }

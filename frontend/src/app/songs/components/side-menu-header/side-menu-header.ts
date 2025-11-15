@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { environment } from '../../../../environments/environment.development';
-import { AuthService } from '../../../auth/services/auth.service'; // 👈 importa tu servicio
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth.service';
+import { RouterLink } from '@angular/router';
+import { User } from '../../../auth/interfaces/user.interface';
 
 @Component({
   selector: 'songs-side-menu-header',
@@ -11,9 +12,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class SideMenuHeader {
   envs = environment;
-  authService = inject(AuthService);
+  private authService = inject(AuthService);
 
-  get userName() {
-    return this.authService.user()?.name || 'Usuario';
-  }
+  // Computed para que se actualice automáticamente cuando cambie el usuario
+  userName = computed(() => this.authService.user()?.name || 'Usuario');
 }

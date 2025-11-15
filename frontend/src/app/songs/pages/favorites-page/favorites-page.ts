@@ -1,6 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { FavoritesService, Song } from '../../services/favorites.service';
 import { CommonModule } from '@angular/common';
+import { SongService } from '../../services/songs.service';
+import { Song } from '../../interfaces/song.interface';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-favorites-page',
@@ -10,25 +12,44 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./favorites-page.css'],
 })
 export default class FavoritesPage implements OnInit {
-  private favoritesService = inject(FavoritesService);
+
+  private songService = inject(SongService); // <-- aquí inyectas
+  private authService = inject(AuthService); // <-- necesitas para el usuario
+
   favorites = signal<Song[]>([]);
-  userId = '';
 
   ngOnInit() {
     this.loadFavorites();
   }
 
   loadFavorites() {
-    this.favoritesService.getFavorites(this.userId).subscribe((songs) => {
-      this.favorites.set(songs);
+    const currentUser = this.authService.user();
+    if (!currentUser) {
+      this.favorites.set([]);
+      return;
+    }
+
+    this.songService.getFavorites(currentUser.email).subscribe({
+      next: (songs) => this.favorites.set(songs),
+      error: (err) => {
+        console.error('Error cargando favoritos:', err);
+        this.favorites.set([]);
+      }
     });
   }
 
   removeFromFavorites(songId: string) {
-    this.favoritesService.removeFavorite(this.userId, songId).subscribe((ok) => {
-      if (ok) {
-        this.favorites.set(this.favorites().filter((s) => s.id !== songId));
-      }
+    const currentUser = this.authService.user();
+    if (!currentUser || !currentUser.email) return;
+
+    this.songService.removeFavorite(currentUser.email, Number(songId)).subscribe({
+      next: () => {
+        // filtramos usando s.id de tipo string
+        this.favorites.set(this.favorites().filter((s: Song) => s.id !== songId));
+      },
+      error: (err) => console.error('Error eliminando favorito:', err)
     });
   }
+
 }
+

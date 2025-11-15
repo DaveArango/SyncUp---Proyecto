@@ -9,6 +9,5 @@ export const environment = {
 
   // URL base de tu backend
   baseUrl: 'http://localhost:8080/api'
-
 }
 
