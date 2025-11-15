@@ -1,0 +1,13 @@
+<nav class="admin-menu">
+  <ul>
+    <li *ngFor="let option of menuOptions">
+      <a [routerLink]="option.route">
+        <i [class]="option.icon"></i>
+        <div>
+          <strong>{{ option.label }}</strong>
+          <small>{{ option.sublabel }}</small>
+        </div>
+      </a>
+    </li>
+  </ul>
+</nav>

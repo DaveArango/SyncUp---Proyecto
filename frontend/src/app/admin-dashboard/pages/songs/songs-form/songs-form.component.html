@@ -1,0 +1,23 @@
+<div class="p-5">
+  <h2 class="text-2xl font-bold mb-4">{{ songId ? 'Editar Canción' : 'Nueva Canción' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+    <div>
+      <label>Título</label>
+      <input formControlName="title" class="input input-bordered w-full" />
+    </div>
+    <div>
+      <label>Artista</label>
+      <input formControlName="artist" class="input input-bordered w-full" />
+    </div>
+    <div>
+      <label>Género</label>
+      <input formControlName="genre" class="input input-bordered w-full" />
+    </div>
+    <div>
+      <label>Año</label>
+      <input type="number" formControlName="year" class="input input-bordered w-full" />
+    </div>
+    <button type="submit" class="btn btn-primary">{{ songId ? 'Actualizar' : 'Crear' }}</button>
+  </form>
+</div>

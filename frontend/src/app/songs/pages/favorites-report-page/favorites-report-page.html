@@ -1,0 +1,21 @@
+<div class="favorites-container">
+  <h1>Mis canciones favoritas</h1>
+
+  <div *ngIf="loading">
+    <p>Cargando canciones...</p>
+  </div>
+
+  <div *ngIf="!loading && favorites.length === 0">
+    <p>No tienes canciones favoritas aún 🎧</p>
+  </div>
+
+  <div *ngIf="favorites.length">
+    <ul>
+      <li *ngFor="let song of favorites">
+        {{ song.title }} - {{ song.artist || 'Desconocido' }}
+      </li>
+    </ul>
+
+    <button (click)="downloadCSV()">📥 Descargar CSV</button>
+  </div>
+</div>

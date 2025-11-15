@@ -1,0 +1,88 @@
+/* Fondo general */
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #121212 0%, #1f1f1f 100%);
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  padding: 0;
+}
+
+/* Tarjeta del formulario */
+.auth-card {
+  background: #181818;
+  border: 1px solid #282828;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  padding: 2rem;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+}
+
+/* Título */
+.auth-card h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1db954; /* Verde Spotify */
+  margin-bottom: 1.5rem;
+}
+
+/* Inputs */
+.auth-card input {
+  width: 100%;
+  background: #121212;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0.75rem;
+  color: #fff;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
+}
+
+.auth-card input:focus {
+  outline: none;
+  border-color: #1db954;
+}
+
+/* Botón */
+.auth-card button {
+  width: 100%;
+  background-color: #1db954;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 1rem;
+}
+
+.auth-card button:hover {
+  background-color: #1ed760;
+  transform: translateY(-2px);
+}
+
+/* Enlace */
+.auth-card a {
+  color: #1db954;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-card a:hover {
+  text-decoration: underline;
+}
+
+/* Mensaje de error */
+.alert {
+  background-color: #e02424;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-top: 1rem;
+}

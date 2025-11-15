@@ -1,0 +1,20 @@
+<div class="suggestions-container">
+  <h2>Usuarios sugeridos</h2>
+
+  <div *ngIf="loading(); else usersList">
+    <p>Cargando sugerencias...</p>
+  </div>
+
+  <ng-template #usersList>
+    <ul>
+      <li *ngFor="let user of suggestions()">
+        <div class="user-info">
+          <strong>{{ user.name }}</strong> (@{{ user.username }})
+        </div>
+        <button (click)="toggleFollow(user)">
+          {{ user.isFollowing ? 'Dejar de seguir' : 'Seguir' }}
+        </button>
+      </li>
+    </ul>
+  </ng-template>
+</div>

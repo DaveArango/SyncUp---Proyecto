@@ -1,0 +1,13 @@
+<div class="border p-3 rounded mb-4">
+  <p class="font-bold text-lg">{{ song().title }}</p>
+  <p class="text-gray-600">Artista: {{ song().artista }}</p>
+  <p class="text-gray-600">Género: {{ song().genero }}</p>
+  <p class="text-gray-600">Año: {{ song().anio }}</p>
+  <p class="text-gray-600">Duración: {{ song().duracion }}</p>
+
+  <audio
+    [src]="songService.getSongAudioUrl(Number(song().id))"
+    controls
+    class="mt-2 w-full"
+  ></audio>
+</div>

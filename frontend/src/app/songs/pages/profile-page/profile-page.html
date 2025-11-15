@@ -1,0 +1,32 @@
+<div class="profile-container" *ngIf="!isLoading(); else loading">
+  <h1 class="title">Mi perfil</h1>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="form">
+    <label>Nombre</label>
+    <input type="text" formControlName="name" class="input" />
+
+    <label>Nueva contraseña</label>
+    <input
+      type="password"
+      formControlName="password"
+      placeholder="Dejar vacío si no cambia"
+      class="input"
+    />
+
+    <button type="submit" class="btn">Actualizar perfil</button>
+  </form>
+
+  <button class="btn logout-btn" (click)="logout()">Cerrar sesión</button>
+
+  <div *ngIf="success()" class="alert-success">
+    <span>Perfil actualizado correctamente.</span>
+  </div>
+
+  <div *ngIf="hasError()" class="alert-error">
+    <span>Por favor verifica la información.</span>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="loading">Cargando perfil...</div>
+</ng-template>

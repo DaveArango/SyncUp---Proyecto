@@ -1,0 +1,30 @@
+<div class="radio-container">
+  <div *ngIf="loading(); else radioPlaylist">
+    <p>Iniciando Radio...</p>
+  </div>
+
+  <ng-template #radioPlaylist>
+    <h2>🎶 Radio</h2>
+
+    <!-- Mini player -->
+    <div *ngIf="currentSong()" class="mini-player">
+      <p>
+        Reproduciendo: {{ currentSong()?.title }}
+        <span *ngIf="currentSong()?.artist"> - {{ currentSong()?.artist }}</span>
+      </p>
+      <button (click)="togglePlayPause()">
+        {{ isPlaying() ? '⏸ Pausar' : '▶ Reproducir' }}
+      </button>
+    </div>
+
+    <ul>
+      <li *ngFor="let song of queue()">
+        <i class="fa-solid fa-compact-disc"></i>
+        {{ song.title }}
+        <span *ngIf="song.artist"> - {{ song.artist }}</span>
+        <button (click)="playSong(song)">▶ Reproducir</button>
+        <button (click)="addToFavorites(song)">❤️ Favoritos</button>
+      </li>
+    </ul>
+  </ng-template>
+</div>

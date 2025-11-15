@@ -1,0 +1,15 @@
+<div class="favorites-container">
+  <h1>Mis canciones favoritas</h1>
+
+  <div *ngIf="favorites().length === 0" class="empty">
+    <p>No tienes canciones favoritas aún 🎧</p>
+  </div>
+
+  <div class="songs-grid">
+    <div *ngFor="let song of favorites()" class="song-card">
+      <h3>{{ song.title }}</h3>
+      <p>{{ song.artist }}</p>
+      <button (click)="removeFromFavorites(song.id)">Eliminar</button>
+    </div>
+  </div>
+</div>
