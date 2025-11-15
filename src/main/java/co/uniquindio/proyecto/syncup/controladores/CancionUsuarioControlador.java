@@ -113,4 +113,17 @@ public class CancionUsuarioControlador {
                 .body(resource);
     }
 
+    @GetMapping("/busqueda-avanzada")
+    public ResponseEntity<List<Cancion>> busquedaAvanzada(
+            @RequestParam(required = false) String artista,
+            @RequestParam(required = false) String genero,
+            @RequestParam(required = false) Integer anio,
+            @RequestParam(defaultValue = "true") boolean esAnd
+    ) {
+        return ResponseEntity.ok(
+                cancionServicio.busquedaAvanzada(artista, genero, anio, esAnd)
+        );
+    }
+
+
 }

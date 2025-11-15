@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class CancionServicio {
@@ -142,6 +143,79 @@ public class CancionServicio {
         } catch (IOException e) {
             throw new RuntimeException("Error guardando archivo: " + e.getMessage());
         }
+    }
+
+    public List<Cancion> busquedaAvanzada(String artista,
+                                          String genero,
+                                          Integer anio,
+                                          boolean esAnd) {
+
+        List<Cancion> todas = cancionRepositorio.findAll();
+
+        List<Cancion> resultadoArtista = new CopyOnWriteArrayList<>();
+        List<Cancion> resultadoGenero = new CopyOnWriteArrayList<>();
+        List<Cancion> resultadoAnio = new CopyOnWriteArrayList<>();
+
+        List<Thread> hilos = new ArrayList<>();
+
+        if (artista != null && !artista.isBlank()) {
+            Thread hiloArtista = new Thread(() -> {
+                for (Cancion c : todas) {
+                    if (c.getArtista().equalsIgnoreCase(artista)) {
+                        resultadoArtista.add(c);
+                    }
+                }
+            });
+            hilos.add(hiloArtista);
+            hiloArtista.start();
+        }
+
+        if (genero != null && !genero.isBlank()) {
+            Thread hiloGenero = new Thread(() -> {
+                for (Cancion c : todas) {
+                    if (c.getGenero().equalsIgnoreCase(genero)) {
+                        resultadoGenero.add(c);
+                    }
+                }
+            });
+            hilos.add(hiloGenero);
+            hiloGenero.start();
+        }
+
+        if (anio != null) {
+            Thread hiloAnio = new Thread(() -> {
+                for (Cancion c : todas) {
+                    if (c.getAnio() != null && c.getAnio() == anio) {
+                        resultadoAnio.add(c);
+                    }
+                }
+            });
+            hilos.add(hiloAnio);
+            hiloAnio.start();
+        }
+
+        for (Thread t : hilos) {
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Error en concurrencia: " + e.getMessage());
+            }
+        }
+
+        if (esAnd) {
+            List<List<Cancion>> listas = List.of(resultadoArtista, resultadoGenero, resultadoAnio);
+
+            return listas.stream()
+                    .filter(l -> !l.isEmpty())
+                    .reduce((l1, l2) -> l1.stream().filter(l2::contains).toList())
+                    .orElse(List.of());
+        }
+
+        Set<Cancion> union = new HashSet<>();
+        union.addAll(resultadoArtista);
+        union.addAll(resultadoGenero);
+        union.addAll(resultadoAnio);
+        return new ArrayList<>(union);
     }
 
 }
