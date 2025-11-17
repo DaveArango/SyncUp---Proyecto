@@ -135,5 +135,12 @@ public class UsuarioServicio {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 
+    public List<Usuario> obtenerAmigos(String username) {
+        Usuario usuario = usuarioRepositorio.findByIdConAmigos(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        return usuario.getAmigos();
+    }
+
 
 }

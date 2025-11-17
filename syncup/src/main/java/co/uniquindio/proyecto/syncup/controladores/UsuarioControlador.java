@@ -2,10 +2,12 @@ package co.uniquindio.proyecto.syncup.controladores;
 
 import co.uniquindio.proyecto.syncup.entidades.Cancion;
 import co.uniquindio.proyecto.syncup.entidades.Usuario;
+import co.uniquindio.proyecto.syncup.repositorios.UsuarioRepositorio;
 import co.uniquindio.proyecto.syncup.servicios.GrafoSocialServicio;
 import co.uniquindio.proyecto.syncup.servicios.UsuarioServicio;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -19,10 +21,14 @@ public class UsuarioControlador {
 
     private final UsuarioServicio usuarioServicio;
     private final GrafoSocialServicio grafoSocialServicio;
+    private final UsuarioRepositorio usuarioRepositorio;
 
-    public UsuarioControlador(UsuarioServicio usuarioServicio, GrafoSocialServicio grafoSocialServicio) {
+    public UsuarioControlador(UsuarioServicio usuarioServicio,
+                              GrafoSocialServicio grafoSocialServicio,
+                              UsuarioRepositorio usuarioRepositorio) {
         this.usuarioServicio = usuarioServicio;
         this.grafoSocialServicio = grafoSocialServicio;
+        this.usuarioRepositorio = usuarioRepositorio;
     }
 
     // ================= AUTENTICACIÓN =================
@@ -170,5 +176,26 @@ public class UsuarioControlador {
         }
     }
 
+    @GetMapping("/{username}/amigos")
+    public ResponseEntity<?> obtenerAmigos(@PathVariable String username) {
+        try {
+            List<Usuario> amigos = usuarioServicio.obtenerAmigos(username);
+            return ResponseEntity.ok(amigos);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error interno: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{username}/favoritas")
+    @Transactional(readOnly = true)
+    public ResponseEntity<List<Cancion>> obtenerFavoritas(@PathVariable String username) {
+        Usuario usuario = usuarioRepositorio.findByIdConFavoritos(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return ResponseEntity.ok(usuario.getListaFavoritos());
+    }
 
 }

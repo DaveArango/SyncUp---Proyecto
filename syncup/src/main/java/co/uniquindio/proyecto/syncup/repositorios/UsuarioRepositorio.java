@@ -14,4 +14,7 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, String> {
     boolean existsByUsername(String username);
     @Query("SELECT u FROM Usuario u LEFT JOIN FETCH u.listaFavoritos WHERE u.username = :username")
     Optional<Usuario> findByIdConFavoritos(@Param("username") String username);
+    @Query("SELECT u FROM Usuario u LEFT JOIN FETCH u.amigos WHERE u.username = :username")
+    Optional<Usuario> findByIdConAmigos(@Param("username") String username);
+    
 }

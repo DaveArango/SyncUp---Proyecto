@@ -4,6 +4,7 @@ import co.uniquindio.proyecto.syncup.entidades.Cancion;
 import co.uniquindio.proyecto.syncup.entidades.Usuario;
 import co.uniquindio.proyecto.syncup.repositorios.UsuarioRepositorio;
 import co.uniquindio.proyecto.syncup.servicios.CancionServicio;
+import co.uniquindio.proyecto.syncup.servicios.UsuarioServicio;
 import jakarta.transaction.Transactional;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -28,11 +29,14 @@ public class CancionUsuarioControlador {
 
     private final CancionServicio cancionServicio;
     private final UsuarioRepositorio usuarioRepositorio;
+    private final UsuarioServicio usuarioServicio;
 
     public CancionUsuarioControlador(CancionServicio cancionServicio,
-                                     UsuarioRepositorio usuarioRepositorio) {
+                                     UsuarioRepositorio usuarioRepositorio,
+                                     UsuarioServicio usuarioServicio) {
         this.cancionServicio = cancionServicio;
         this.usuarioRepositorio = usuarioRepositorio;
+        this.usuarioServicio = usuarioServicio;
     }
 
     @GetMapping("/descubrimiento/{username}")
