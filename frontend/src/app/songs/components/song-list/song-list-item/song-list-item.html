@@ -4,6 +4,7 @@
   <p class="text-gray-600">Género: {{ song().genero }}</p>
   <p class="text-gray-600">Año: {{ song().anio }}</p>
   <p class="text-gray-600">Duración: {{ song().duracion }}</p>
+  <h1>hola</h1>
 
   <audio
     [src]="songService.getSongAudioUrl(Number(song().id))"
