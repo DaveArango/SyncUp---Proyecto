@@ -6,8 +6,11 @@ import co.uniquindio.proyecto.syncup.repositorios.UsuarioRepositorio;
 import co.uniquindio.proyecto.syncup.servicios.CancionServicio;
 import co.uniquindio.proyecto.syncup.servicios.UsuarioServicio;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,8 +35,8 @@ public class CancionUsuarioControlador {
     private final UsuarioRepositorio usuarioRepositorio;
     private final UsuarioServicio usuarioServicio;
 
-    @Value("${media.path}")
-    private String mediaPath;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     public CancionUsuarioControlador(CancionServicio cancionServicio,
                                      UsuarioRepositorio usuarioRepositorio,
@@ -133,36 +136,43 @@ public class CancionUsuarioControlador {
 
 
 
-
-
     @GetMapping("/reproducir-nombre")
     public ResponseEntity<Resource> reproducirPorNombre(@RequestParam String nombre) throws IOException {
+
         // Buscar coincidencias por autocompletar
         List<String> coincidencias = cancionServicio.autocompletar(nombre);
         if (coincidencias.isEmpty()) {
             return ResponseEntity.status(404).body(null);
         }
+
         String nombreCancion = coincidencias.get(0);
-        // Buscar la canción por título exacto
+
+        // Buscar canción por título exacto
         Cancion c = cancionServicio.listarTodas().stream()
                 .filter(can -> can.getTitulo().equalsIgnoreCase(nombreCancion))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Canción no encontrada: " + nombreCancion));
-        // 📌 Ruta relativa correcta
-        //Path baseDir = Paths.get("media").toAbsolutePath().normalize();
-        //Path path = baseDir.resolve(c.getRutaArchivo()).normalize();
-        Path baseDir = Paths.get(mediaPath).toAbsolutePath().normalize();
-        Path path = baseDir.resolve(c.getRutaArchivo()).normalize();
-        System.out.println("🟩 Reproduciendo por nombre desde: " + path);
-        if (!Files.exists(path)) {
-            throw new RuntimeException("Archivo no encontrado en: " + path);
+
+        // 📌 Cargar archivo desde: src/main/resources/media/
+        Resource resource = resourceLoader.getResource("classpath:media/" + c.getRutaArchivo());
+
+        if (!resource.exists()) {
+            throw new RuntimeException("Archivo no encontrado: " + c.getRutaArchivo());
         }
-        Resource resource = new UrlResource(path.toUri());
+
+        // Algunos servidores no permiten convertir Resource -> File
+        // así que leemos el InputStream y devolvemos ByteArrayResource
+        byte[] bytes = resource.getInputStream().readAllBytes();
+        ByteArrayResource byteArrayResource = new ByteArrayResource(bytes);
+
+        System.out.println("🟩 Reproduciendo: " + c.getRutaArchivo());
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + path.getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + c.getRutaArchivo() + "\"")
                 .contentType(MediaType.parseMediaType("audio/mpeg"))
-                .body(resource);
+                .body(byteArrayResource);
     }
+
 
     @GetMapping("/buscar-por-nombre")
     public ResponseEntity<List<Cancion>> buscarPorNombre(@RequestParam String nombre) {
