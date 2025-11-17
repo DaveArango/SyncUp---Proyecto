@@ -97,19 +97,34 @@ public class CancionUsuarioControlador {
 
     @GetMapping("/reproducir/{id}")
     public ResponseEntity<Resource> reproducir(@PathVariable Long id) throws IOException {
+
         Cancion c = cancionServicio.listarTodas().stream()
                 .filter(can -> can.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Canción no encontrada"));
 
-        Path path = Paths.get(c.getRutaArchivo());
+        // 📌 Carpeta relativa al backend (siempre válida)
+        Path baseDir = Paths.get("media").toAbsolutePath().normalize();
+
+        // 📌 Archivo final dentro de /media
+        Path path = baseDir.resolve(c.getRutaArchivo()).normalize();
+
+        System.out.println("🟦 Buscando archivo en: " + path);
+
+        if (!Files.exists(path)) {
+            throw new RuntimeException("Archivo NO encontrado en: " + path);
+        }
+
         Resource resource = new UrlResource(path.toUri());
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + path.getFileName() + "\"")
-                .contentType(MediaType.valueOf("audio/mpeg"))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=\"" + path.getFileName() + "\"")
+                .contentType(MediaType.parseMediaType("audio/mpeg"))
                 .body(resource);
     }
+
+
 
     @GetMapping("/reproducir-nombre")
     public ResponseEntity<Resource> reproducirPorNombre(@RequestParam String nombre) throws IOException {

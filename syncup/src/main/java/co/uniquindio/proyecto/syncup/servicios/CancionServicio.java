@@ -19,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Service
 public class CancionServicio {
 
+    private final String MEDIA_DIR = "media/";
     private final CancionRepositorio cancionRepositorio;
     private final TrieServicio trieServicio;
     private final GrafoSimilitudServicio grafoSimilitudServicio;
@@ -136,14 +137,21 @@ public class CancionServicio {
 
     public String guardarArchivo(MultipartFile archivo) {
         try {
-            Path destino = Paths.get("C:/Users/MI PC/Desktop/quinto_semestre/estructura de datos/proyectoFinal/syncup/media")
-                    .resolve(archivo.getOriginalFilename());
+            // Crear carpeta si no existe
+            Path carpeta = Paths.get(MEDIA_DIR).toAbsolutePath().normalize();
+            if (!Files.exists(carpeta)) {
+                Files.createDirectories(carpeta);
+            }
+            // Guardar archivo en la carpeta media
+            Path destino = carpeta.resolve(archivo.getOriginalFilename());
             Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
-            return destino.toString();
+            // *** SE GUARDA SOLO EL NOMBRE ***
+            return archivo.getOriginalFilename();
         } catch (IOException e) {
             throw new RuntimeException("Error guardando archivo: " + e.getMessage());
         }
     }
+
 
     public List<Cancion> busquedaAvanzada(String artista,
                                           String genero,
