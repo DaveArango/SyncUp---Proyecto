@@ -77,4 +77,8 @@ export class SongService {
   return this.http.get<Song[]>(`${environment.baseUrl}/grafo/similares/${id}`)
 }
 
+getRadioSongs(id: number) {
+  return this.http.get<Song[]>(`${environment.baseUrl}/usuario/canciones/radio/${id}`);
+}
+
 }

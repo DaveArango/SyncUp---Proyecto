@@ -1,97 +1,47 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { SongService } from '../../services/songs.service';
+import { Song } from '../../interfaces/song.interface';
 import { CommonModule } from '@angular/common';
-import { RadioService } from '../../services/radio.service';
-import { FavoritesService, Song } from '../../services/favorites.service';
-import { AuthService } from '../../../auth/services/auth.service';
+
 
 @Component({
   selector: 'app-radio-page',
-  imports: [CommonModule],
+  imports:[CommonModule],
   templateUrl: './radio-page.html',
-  styleUrls: ['./radio-page.css']
 })
-export default class RadioPage {
+export default class RadioPage implements OnInit {
 
-  queue = signal<Song[]>([]);
+  private songService = inject(SongService);
+
+  radioSongs = signal<Song[]>([]);
   loading = signal(false);
-  currentSong = signal<Song | null>(null);
-  isPlaying = signal(false);
+  error = signal<string | null>(null);
 
-  private radioService = inject(RadioService);
-  private favoritesService = inject(FavoritesService);
-  private authService = inject(AuthService);
+  radioId = 8;  // o dinámico si quieres
 
-  private audio = new Audio();
-
-  constructor() {
-    // Escuchar cuando termina la canción para pasar a la siguiente
-    this.audio.addEventListener('ended', () => this.playNextSong());
+  ngOnInit() {
+    this.loadRadioSongs();
   }
 
-  startRadio(songId: string) {
+  loadRadioSongs() {
     this.loading.set(true);
-    this.radioService.startRadioFromSong(songId).subscribe({
+    this.error.set(null);
+
+    this.songService.getRadioSongs(this.radioId).subscribe({
       next: (songs) => {
-        this.queue.set(songs);
+        this.radioSongs.set(songs || []);
         this.loading.set(false);
-        if (songs.length > 0) this.playSong(songs[0]);
       },
       error: (err) => {
-        console.error('Error cargando radio', err);
+        console.error(err);
+        this.error.set('Error cargando canciones de radio');
         this.loading.set(false);
       }
     });
   }
 
-  playSong(song: Song) {
-    if (!song.rutaArchivo) {
-      console.error('La canción no tiene URL de reproducción');
-      return;
-    }
-
-    this.currentSong.set(song);
-    this.audio.src = song.rutaArchivo;
-    this.audio.play().then(() => this.isPlaying.set(true)).catch(err => console.error(err));
-  }
-
-  togglePlayPause() {
-    if (!this.currentSong()) return;
-    if (this.isPlaying()) {
-      this.audio.pause();
-      this.isPlaying.set(false);
-    } else {
-      this.audio.play().then(() => this.isPlaying.set(true)).catch(err => console.error(err));
-    }
-  }
-
-  playNextSong() {
-    const queue = this.queue();
-    const current = this.currentSong();
-    if (!current) return;
-
-    const currentIndex = queue.findIndex(s => s.id === current.id);
-    const nextIndex = currentIndex + 1;
-    if (nextIndex < queue.length) {
-      this.playSong(queue[nextIndex]);
-    } else {
-      // Fin de la cola
-      this.isPlaying.set(false);
-      this.currentSong.set(null);
-    }
-  }
-
-  addToFavorites(song: Song) {
-    const currentUser = this.authService.user();
-    if (!currentUser) {
-      console.error('Usuario no autenticado');
-      return;
-    }
-
-    const userId = currentUser.id;
-
-    this.favoritesService.addFavorite(userId, song.id).subscribe(ok => {
-      if (ok) console.log(`${song.titulo} agregado a favoritos`);
-      else console.error('No se pudo agregar a favoritos');
-    });
+  audioSrc(song: Song): string {
+    return this.songService.getSongAudioUrl(song.id);
   }
 }
+

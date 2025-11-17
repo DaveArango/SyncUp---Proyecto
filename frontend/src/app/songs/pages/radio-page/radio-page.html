@@ -1,30 +1,16 @@
-<div class="radio-container">
-  <div *ngIf="loading(); else radioPlaylist">
-    <p>Iniciando Radio...</p>
+<h2>Canciones en Radio</h2>
+
+<div *ngIf="loading()">Cargando canciones...</div>
+<div *ngIf="error()">{{ error() }}</div>
+
+<div *ngFor="let song of radioSongs()">
+  <div class="border p-3 rounded mb-4">
+    <p class="font-bold text-lg">{{ song.titulo }}</p>
+    <p class="text-gray-600">Artista: {{ song.artista }}</p>
+    <p class="text-gray-600">Género: {{ song.genero }}</p>
+    <p class="text-gray-600">Año: {{ song.anio }}</p>
+    <p class="text-gray-600">Duración: {{ song.duracion }}</p>
+
+    <audio [src]="audioSrc(song)" controls class="mt-2 w-full"></audio>
   </div>
-
-  <ng-template #radioPlaylist>
-    <h2>🎶 Radio</h2>
-
-    <!-- Mini player -->
-    <div *ngIf="currentSong()" class="mini-player">
-      <p>
-        Reproduciendo: {{ currentSong()?.titulo }}
-        <span *ngIf="currentSong()?.artista"> - {{ currentSong()?.artista }}</span>
-      </p>
-      <button (click)="togglePlayPause()">
-        {{ isPlaying() ? '⏸ Pausar' : '▶ Reproducir' }}
-      </button>
-    </div>
-
-    <ul>
-      <li *ngFor="let song of queue()">
-        <i class="fa-solid fa-compact-disc"></i>
-        {{ song.titulo }}
-        <span *ngIf="song.artista"> - {{ song.artista }}</span>
-        <button (click)="playSong(song)">▶ Reproducir</button>
-        <button (click)="addToFavorites(song)">❤️ Favoritos</button>
-      </li>
-    </ul>
-  </ng-template>
 </div>
