@@ -1,0 +1,21 @@
+/* Fondo oscuro del audio */
+audio {
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  width: 100%;
+}
+
+/* Chrome / Edge / Opera: barra de progreso */
+audio::-webkit-media-controls-panel {
+  background-color: #1e1e1e !important;
+  color: white !important;
+}
+
+/* Botones */
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-mute-button,
+audio::-webkit-media-controls-timeline,
+audio::-webkit-media-controls-current-time-display,
+audio::-webkit-media-controls-time-remaining-display {
+  filter: invert(100%);
+}
