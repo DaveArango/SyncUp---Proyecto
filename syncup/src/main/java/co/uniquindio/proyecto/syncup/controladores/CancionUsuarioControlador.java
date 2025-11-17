@@ -6,6 +6,7 @@ import co.uniquindio.proyecto.syncup.repositorios.UsuarioRepositorio;
 import co.uniquindio.proyecto.syncup.servicios.CancionServicio;
 import co.uniquindio.proyecto.syncup.servicios.UsuarioServicio;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -30,6 +31,9 @@ public class CancionUsuarioControlador {
     private final CancionServicio cancionServicio;
     private final UsuarioRepositorio usuarioRepositorio;
     private final UsuarioServicio usuarioServicio;
+
+    @Value("${media.path}")
+    private String mediaPath;
 
     public CancionUsuarioControlador(CancionServicio cancionServicio,
                                      UsuarioRepositorio usuarioRepositorio,
@@ -145,7 +149,9 @@ public class CancionUsuarioControlador {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Canción no encontrada: " + nombreCancion));
         // 📌 Ruta relativa correcta
-        Path baseDir = Paths.get("media").toAbsolutePath().normalize();
+        //Path baseDir = Paths.get("media").toAbsolutePath().normalize();
+        //Path path = baseDir.resolve(c.getRutaArchivo()).normalize();
+        Path baseDir = Paths.get(mediaPath).toAbsolutePath().normalize();
         Path path = baseDir.resolve(c.getRutaArchivo()).normalize();
         System.out.println("🟩 Reproduciendo por nombre desde: " + path);
         if (!Files.exists(path)) {
