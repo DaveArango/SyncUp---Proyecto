@@ -44,13 +44,13 @@ export default class RadioPage {
   }
 
   playSong(song: Song) {
-    if (!song.url) {
+    if (!song.rutaArchivo) {
       console.error('La canción no tiene URL de reproducción');
       return;
     }
 
     this.currentSong.set(song);
-    this.audio.src = song.url;
+    this.audio.src = song.rutaArchivo;
     this.audio.play().then(() => this.isPlaying.set(true)).catch(err => console.error(err));
   }
 
@@ -90,7 +90,7 @@ export default class RadioPage {
     const userId = currentUser.id;
 
     this.favoritesService.addFavorite(userId, song.id).subscribe(ok => {
-      if (ok) console.log(`${song.title} agregado a favoritos`);
+      if (ok) console.log(`${song.titulo} agregado a favoritos`);
       else console.error('No se pudo agregar a favoritos');
     });
   }

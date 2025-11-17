@@ -39,7 +39,7 @@ export class AuthService {
             this._user.set({
               id: '',          // opcional
               name: resp.usuario.nombre,
-              email: resp.usuario.email,       // opcional
+              username: resp.usuario.username,       // opcional
               isActive: true,  // opcional
               role: 'user'     // opcional
             });
@@ -87,7 +87,7 @@ export class AuthService {
   }
   // ---------------- GET PROFILE ----------------
   getProfile(): Observable<User | null> {
-    const username = this._user()?.email; // aquí usamos username
+    const username = this._user()?.username; // aquí usamos username
     if (!username) return of(null);
 
     return this.http.get<User>(`${baseUrl}/usuario/perfil/${username}`)
@@ -99,13 +99,13 @@ export class AuthService {
   // ---------------- UPDATE PROFILE ----------------
   updateProfile(data: { name?: string; password?: string }): Observable<User | null> {
     const user = this._user();
-    if (!user || !user.email) return of(null);
+    if (!user || !user.username) return of(null);
 
     let params = new HttpParams();
     if (data.name) params = params.set('nombre', data.name);
     if (data.password) params = params.set('password', data.password);
 
-    return this.http.put<User>(`${baseUrl}/usuario/perfil/${user.email}`, null, { params })
+    return this.http.put<User>(`${baseUrl}/usuario/perfil/${user.username}`, null, { params })
       .pipe(
         tap(u => this._user.set(u)),
         catchError(err => {

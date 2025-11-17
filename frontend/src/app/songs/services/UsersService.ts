@@ -25,7 +25,7 @@ export class UsersService {
   loadSuggestions(username: string) {
     this.loading.set(true);
 
-    this.http.get<any[]>(`${this.baseUrl}/${username}/sugerencias`)
+    this.http.get<any[]>(`${this.baseUrl}/grafo-social/amigos-de-amigos/${username}`)
       .pipe(tap(() => this.loading.set(false)))
       .subscribe(
         data => {

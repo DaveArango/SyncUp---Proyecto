@@ -45,10 +45,10 @@ export default class FavoritesReportPage {
     // Contenido
     const rows = this.favorites.map(s => [
       s.id,
-      s.title,
-      s.artist ?? '',
-      s.album ?? '',
-      s.year ?? ''
+      s.titulo,
+      s.artista ?? '',
+      s.genero ?? '',
+      s.anio ?? ''
     ]);
 
     // Generar CSV como string

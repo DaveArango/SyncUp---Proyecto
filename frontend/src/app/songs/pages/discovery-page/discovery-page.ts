@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SongService } from '../../services/songs.service';
-import { FavoritesService, Song } from '../../services/favorites.service';
+import { FavoritesService } from '../../services/favorites.service';
+import { Song } from '../../interfaces/song.interface';
 import { AuthService } from '../../../auth/services/auth.service';
-
 
 @Component({
   selector: 'app-discovery-page',
@@ -25,35 +25,45 @@ export default class DiscoveryPage {
   }
 
   loadWeeklyDiscovery() {
+    this.loading.set(true);
     this.songService.getWeeklyDiscoveryFromAPI().subscribe({
       next: (songsFromAPI: Song[]) => {
-        // Los campos extras son opcionales, podemos usar directamente la respuesta
+        console.log('Weekly discovery recibidas:', songsFromAPI);
         this.weeklyDiscovery.set(songsFromAPI);
         this.loading.set(false);
       },
       error: (err) => {
         console.error('Error cargando playlist', err);
+        this.weeklyDiscovery.set([]);
         this.loading.set(false);
       }
     });
   }
 
   addToFavorites(song: Song) {
-    // Tomamos el usuario autenticado desde AuthService
-    const currentUser = this.authService.user(); // computed<User | null>
+    // AuthService.user() devuelve el usuario directamente (no es función)
+    const currentUser = this.authService.user();
+
     if (!currentUser) {
       console.error('Usuario no autenticado');
       return;
     }
 
-    const userId = currentUser.id;
+    const username = currentUser.username;
+    if (!username) {
+      console.error('El usuario no tiene username (requerido por el backend)');
+      return;
+    }
 
-    this.favoritesService.addFavorite(userId, song.id).subscribe(ok => {
-      if (ok) {
-        console.log(`${song.title} agregado a favoritos`);
-      } else {
-        console.error('No se pudo agregar a favoritos');
-      }
+    this.favoritesService.addFavorite(username, song.id).subscribe({
+      next: (ok: boolean) => {
+        if (ok) {
+          console.log(`${song.titulo ?? song.id} agregado a favoritos`);
+        } else {
+          console.error('No se pudo agregar a favoritos');
+        }
+      },
+      error: (err) => console.error('Error al agregar favorito:', err)
     });
   }
 }

@@ -9,8 +9,8 @@
     <!-- Mini player -->
     <div *ngIf="currentSong()" class="mini-player">
       <p>
-        Reproduciendo: {{ currentSong()?.title }}
-        <span *ngIf="currentSong()?.artist"> - {{ currentSong()?.artist }}</span>
+        Reproduciendo: {{ currentSong()?.titulo }}
+        <span *ngIf="currentSong()?.artista"> - {{ currentSong()?.artista }}</span>
       </p>
       <button (click)="togglePlayPause()">
         {{ isPlaying() ? '⏸ Pausar' : '▶ Reproducir' }}
@@ -20,8 +20,8 @@
     <ul>
       <li *ngFor="let song of queue()">
         <i class="fa-solid fa-compact-disc"></i>
-        {{ song.title }}
-        <span *ngIf="song.artist"> - {{ song.artist }}</span>
+        {{ song.titulo }}
+        <span *ngIf="song.artista"> - {{ song.artista }}</span>
         <button (click)="playSong(song)">▶ Reproducir</button>
         <button (click)="addToFavorites(song)">❤️ Favoritos</button>
       </li>

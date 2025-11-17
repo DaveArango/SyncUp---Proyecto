@@ -1,8 +1,8 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SongService } from '../../services/songs.service';
-import { Song } from '../../interfaces/song.interface';
+import { FavoritesService, Song } from '../../services/favorites.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { SongService } from '../../services/songs.service';
 
 @Component({
   selector: 'app-favorites-page',
@@ -13,8 +13,8 @@ import { AuthService } from '../../../auth/services/auth.service';
 })
 export default class FavoritesPage implements OnInit {
 
-  private songService = inject(SongService); // <-- aquí inyectas
-  private authService = inject(AuthService); // <-- necesitas para el usuario
+  private favoritesService = inject(FavoritesService);
+  private authService = inject(AuthService);
 
   favorites = signal<Song[]>([]);
 
@@ -24,32 +24,52 @@ export default class FavoritesPage implements OnInit {
 
   loadFavorites() {
     const currentUser = this.authService.user();
-    if (!currentUser) {
+
+    if (!currentUser || !currentUser.username) {
+      console.warn('Usuario no disponible o no tiene username', currentUser);
       this.favorites.set([]);
       return;
     }
 
-    this.songService.getFavorites(currentUser.email).subscribe({
-      next: (songs) => this.favorites.set(songs),
+    const username = currentUser.username as string;
+
+    this.favoritesService.getFavorites(username).subscribe({
+      next: (songs) => {
+        console.log('Favoritas recibidas:', songs);
+        this.favorites.set(songs);
+      },
       error: (err) => {
-        console.error('Error cargando favoritos:', err);
+        console.error('Error cargando favoritas:', err);
         this.favorites.set([]);
       }
     });
   }
 
-  removeFromFavorites(songId: string) {
+  removeFromFavorites(songId: number | string) {
     const currentUser = this.authService.user();
-    if (!currentUser || !currentUser.email) return;
+    if (!currentUser || !currentUser.username) {
+      console.warn('No se puede eliminar: usuario no válido', currentUser);
+      return;
+    }
 
-    this.songService.removeFavorite(currentUser.email, Number(songId)).subscribe({
-      next: () => {
-        // filtramos usando s.id de tipo string
-        this.favorites.set(this.favorites().filter((s: Song) => s.id !== songId));
+    const username = currentUser.username as string;
+    const idNum = typeof songId === 'string' ? Number(songId) : songId;
+
+    if (Number.isNaN(idNum)) {
+      console.warn('songId inválido:', songId);
+      return;
+    }
+
+    this.favoritesService.removeFavorite(username, idNum).subscribe({
+      next: (ok) => {
+        if (ok) {
+          this.favorites.set(this.favorites().filter((s: Song) => s.id !== idNum));
+        } else {
+          console.warn('El backend indicó que no pudo eliminar la favorita.');
+        }
       },
       error: (err) => console.error('Error eliminando favorito:', err)
     });
   }
-
 }
 

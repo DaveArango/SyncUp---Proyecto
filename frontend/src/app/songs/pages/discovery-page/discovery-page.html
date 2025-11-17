@@ -8,7 +8,7 @@
     <li *ngFor="let song of weeklyDiscovery()">
       <!-- Ícono de disco -->
       <i class="fa-solid fa-compact-disc" style="margin-right: 8px;"></i>
-      {{ song.title }}
+      {{ song.titulo }}
       <button (click)="addToFavorites(song)">❤️</button>
     </li>
   </ul>
