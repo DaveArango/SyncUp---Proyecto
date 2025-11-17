@@ -17,9 +17,9 @@ public class OpenApiConfig {
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("API Sistema de Compras")
+                        .title("SYNCUP reproductor de musica")
                         .version("1.0.0")
-                        .description("Documentación de endpoints con autenticación JWT"))
+                        .description("Documentación de endpoints "))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName,
