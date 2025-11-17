@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-songs-list',
   imports: [RouterLink, CommonModule],
+  standalone: true,
   templateUrl: './songs-list.component.html'
 })
 export default class SongsListComponent implements OnInit {
@@ -29,4 +30,6 @@ export default class SongsListComponent implements OnInit {
       if (success) this.loadSongs();
     });
   }
+
+  protected readonly String = String;
 }

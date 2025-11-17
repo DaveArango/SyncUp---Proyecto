@@ -14,13 +14,13 @@
     </thead>
     <tbody>
       <tr *ngFor="let song of songs()">
-        <td class="border px-4 py-2">{{ song.title }}</td>
+        <td class="border px-4 py-2">{{ song.titulo }}</td>
        <!-- <td class="border px-4 py-2">{{ song.artist }}</td>
         <td class="border px-4 py-2">{{ song.genre }}</td>
         <td class="border px-4 py-2">{{ song.year }}</td>-->
         <td class="border px-4 py-2 space-x-2">
           <a [routerLink]="['/admin/songs/edit', song.id]" class="btn btn-sm btn-warning">Editar</a>
-          <button (click)="deleteSong(song.id)" class="btn btn-sm btn-error">Eliminar</button>
+          <button (click)="deleteSong(String(song.id))" class="btn btn-sm btn-error">Eliminar</button>
         </td>
       </tr>
     </tbody>
