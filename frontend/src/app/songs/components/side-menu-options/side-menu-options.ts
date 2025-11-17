@@ -9,8 +9,6 @@ interface MenuOption{
   icon: string;
 }
 
-
-
 @Component({
   selector: 'songs-side-menu-options',
   imports: [RouterLink, RouterLinkActive],
@@ -26,6 +24,12 @@ export class SideMenuOptions {
       label: 'Trending',
       sublabel: 'Songs Populares',
       route: '/dashboard/trending',
+    },
+    {
+      icon: 'bi bi-people-fill',
+      label: 'Amigos',
+      sublabel: 'Seguidos',
+      route: '/dashboard/amigos',
     },
     {
       icon: 'fa-solid fa-magnifying-glass',

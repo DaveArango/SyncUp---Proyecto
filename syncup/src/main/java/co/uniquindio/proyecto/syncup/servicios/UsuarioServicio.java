@@ -101,7 +101,7 @@ public class UsuarioServicio {
     }
 
 
-    @Transactional
+    /*@Transactional
     public void dejarDeSeguir(String username, String seguido) {
         Usuario u1 = usuarioRepositorio.findById(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
@@ -114,7 +114,29 @@ public class UsuarioServicio {
         } else {
             System.out.println("El usuario " + username + " no sigue a " + seguido);
         }
+    }*/
+    @Transactional
+    public void dejarDeSeguir(String username, String seguido) {
+
+        Usuario u1 = usuarioRepositorio.findById(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
+
+        Usuario u2 = usuarioRepositorio.findById(seguido)
+                .orElseThrow(() -> new RuntimeException("Usuario a dejar de seguir no encontrado: " + seguido));
+
+        // Revisa si u2 está en la lista de amigos/seguidos
+        if (u1.getAmigos().contains(u2)) {
+
+            u1.getAmigos().remove(u2);   // lo elimina correctamente gracias a equals/hashCode
+            usuarioRepositorio.save(u1);
+
+            System.out.println(username + " dejó de seguir a " + seguido);
+
+        } else {
+            System.out.println("El usuario " + username + " no sigue a " + seguido);
+        }
     }
+
 
 
     public List<Usuario> sugerirUsuarios(String username) {

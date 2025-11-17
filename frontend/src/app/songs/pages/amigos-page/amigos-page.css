@@ -1,0 +1,62 @@
+.titulo {
+  margin-bottom: 16px;
+  font-size: 24px;
+}
+
+.lista-amigos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item-amigo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background: #fafafa;
+}
+
+.info-amigo {
+  display: flex;
+  flex-direction: column;
+}
+
+.nombre {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.usuario {
+  color: #555;
+  font-size: 13px;
+}
+
+.btn-unfollow {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-unfollow:hover {
+  background: #e60000;
+}
+
+.estado {
+  margin: 10px 0;
+}
+
+.cargando {
+  color: #777;
+}
+
+.error {
+  color: red;
+}

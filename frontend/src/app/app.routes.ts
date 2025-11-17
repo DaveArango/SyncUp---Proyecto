@@ -31,6 +31,12 @@ export const routes: Routes = [
         loadComponent: () => import('./songs/pages/trending-page/trending-page'),
       },
       {
+        path: 'amigos',
+        loadComponent: () =>
+          import('./songs/pages/amigos-page/amigos-page')
+            .then(m => m.default)
+      },
+      {
         path: 'search',
         loadComponent: () => import('./songs/pages/search/search'),
       },

@@ -1,0 +1,21 @@
+<h2 class="titulo">Amigos</h2>
+
+<div *ngIf="loading()" class="estado cargando">Cargando amigos...</div>
+<div *ngIf="error()" class="estado error">{{ error() }}</div>
+
+<ul *ngIf="!loading() && !error()" class="lista-amigos">
+  <li *ngFor="let amigo of amigos()" class="item-amigo">
+
+    <div class="info-amigo">
+      <strong class="nombre">{{ amigo.nombre }}</strong>
+      <small class="usuario">@{{ amigo.username }}</small>
+    </div>
+
+    <button
+      class="btn-unfollow"
+      (click)="dejarDeSeguir(amigo.username)">
+      Dejar de seguir
+    </button>
+
+  </li>
+</ul>
