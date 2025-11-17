@@ -141,7 +141,7 @@ public class CancionUsuarioControlador {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Canción no encontrada: " + nombreCancion));
         // 📌 Ruta relativa correcta
-        Path baseDir = Paths.get("media").toAbsolutePath().normalize();
+        Path baseDir = Paths.get("syncup", "media").toAbsolutePath().normalize();
         Path path = baseDir.resolve(c.getRutaArchivo()).normalize();
         System.out.println("🟩 Reproduciendo por nombre desde: " + path);
         if (!Files.exists(path)) {
