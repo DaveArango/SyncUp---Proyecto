@@ -19,7 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Service
 public class CancionServicio {
 
-    private final String MEDIA_DIR = "media/";
+    private final String MEDIA_DIR = "";
     private final CancionRepositorio cancionRepositorio;
     private final TrieServicio trieServicio;
     private final GrafoSimilitudServicio grafoSimilitudServicio;
