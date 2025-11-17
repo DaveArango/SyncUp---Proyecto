@@ -8,10 +8,7 @@ import co.uniquindio.proyecto.syncup.servicios.UsuarioServicio;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,17 +30,14 @@ public class CancionUsuarioControlador {
 
     private final CancionServicio cancionServicio;
     private final UsuarioRepositorio usuarioRepositorio;
-    private final UsuarioServicio usuarioServicio;
 
     @Autowired
     private ResourceLoader resourceLoader;
 
     public CancionUsuarioControlador(CancionServicio cancionServicio,
-                                     UsuarioRepositorio usuarioRepositorio,
-                                     UsuarioServicio usuarioServicio) {
+                                     UsuarioRepositorio usuarioRepositorio) {
         this.cancionServicio = cancionServicio;
         this.usuarioRepositorio = usuarioRepositorio;
-        this.usuarioServicio = usuarioServicio;
     }
 
     @GetMapping("/descubrimiento/{username}")
@@ -112,24 +106,14 @@ public class CancionUsuarioControlador {
                 .filter(can -> can.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Canción no encontrada"));
-        Path currentDir = Paths.get("").toAbsolutePath();
-        Path projectDir = currentDir;
-        while (projectDir != null && !projectDir.getFileName().toString().equals("SyncUp---Proyecto")) {
-            projectDir = projectDir.getParent();
+        // Obtener el recurso desde src/main/resources/media
+        Resource resource = new ClassPathResource("media/" + c.getRutaArchivo());
+        if (!resource.exists()) {
+            throw new RuntimeException("Archivo NO encontrado: " + c.getRutaArchivo());
         }
-        if (projectDir == null) {
-            throw new RuntimeException("❌ No se pudo encontrar la carpeta SyncUp---Proyecto en la ruta: " + currentDir);
-        }
-        Path mediaDir = projectDir.resolve("syncup").resolve("media");
-        Path path = mediaDir.resolve(c.getRutaArchivo()).normalize();
-        System.out.println("🟦 Buscando archivo en: " + path);
-        if (!Files.exists(path)) {
-            throw new RuntimeException("Archivo NO encontrado en: " + path);
-        }
-        Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "inline; filename=\"" + path.getFileName() + "\"")
+                        "inline; filename=\"" + c.getRutaArchivo() + "\"")
                 .contentType(MediaType.parseMediaType("audio/mpeg"))
                 .body(resource);
     }
