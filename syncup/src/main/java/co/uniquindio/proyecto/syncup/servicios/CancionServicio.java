@@ -134,7 +134,7 @@ public class CancionServicio {
     public List<String> autocompletar(String prefijo) {
         return trieServicio.autocompletar(prefijo);
     }
-
+/*
     public String guardarArchivo(MultipartFile archivo) {
         try {
             // Crear carpeta si no existe
@@ -150,7 +150,33 @@ public class CancionServicio {
         } catch (IOException e) {
             throw new RuntimeException("Error guardando archivo: " + e.getMessage());
         }
+    }*/
+public String guardarArchivo(MultipartFile archivo) {
+    try {
+        // Ruta donde quieres guardar los archivos
+        Path carpeta = Paths.get("syncup/src/main/resources/media").toAbsolutePath().normalize();
+
+        // Crear carpeta si no existe
+        if (!Files.exists(carpeta)) {
+            Files.createDirectories(carpeta);
+        }
+
+        // Nombre real del archivo
+        String nombreArchivo = archivo.getOriginalFilename();
+
+        // Ruta final (solo nombre dentro de /media/)
+        Path destino = carpeta.resolve(nombreArchivo);
+
+        // Copiar el archivo (reemplaza si ya existe)
+        Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+
+        // ✔️ Retorno solo el nombre del archivo
+        return nombreArchivo;
+
+    } catch (IOException e) {
+        throw new RuntimeException("Error guardando archivo: " + e.getMessage());
     }
+}
 
 
     public List<Cancion> busquedaAvanzada(String artista,
