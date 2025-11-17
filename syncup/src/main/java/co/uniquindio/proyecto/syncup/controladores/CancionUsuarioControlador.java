@@ -97,32 +97,33 @@ public class CancionUsuarioControlador {
 
     @GetMapping("/reproducir/{id}")
     public ResponseEntity<Resource> reproducir(@PathVariable Long id) throws IOException {
-
         Cancion c = cancionServicio.listarTodas().stream()
                 .filter(can -> can.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Canción no encontrada"));
-
-        // 📌 Carpeta relativa al backend (siempre válida)
-        Path baseDir = Paths.get("media").toAbsolutePath().normalize();
-
-        // 📌 Archivo final dentro de /media
-        Path path = baseDir.resolve(c.getRutaArchivo()).normalize();
-
+        Path currentDir = Paths.get("").toAbsolutePath();
+        Path projectDir = currentDir;
+        while (projectDir != null && !projectDir.getFileName().toString().equals("SyncUp---Proyecto")) {
+            projectDir = projectDir.getParent();
+        }
+        if (projectDir == null) {
+            throw new RuntimeException("❌ No se pudo encontrar la carpeta SyncUp---Proyecto en la ruta: " + currentDir);
+        }
+        Path mediaDir = projectDir.resolve("syncup").resolve("media");
+        Path path = mediaDir.resolve(c.getRutaArchivo()).normalize();
         System.out.println("🟦 Buscando archivo en: " + path);
-
         if (!Files.exists(path)) {
             throw new RuntimeException("Archivo NO encontrado en: " + path);
         }
-
         Resource resource = new UrlResource(path.toUri());
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "inline; filename=\"" + path.getFileName() + "\"")
                 .contentType(MediaType.parseMediaType("audio/mpeg"))
                 .body(resource);
     }
+
+
 
 
 
@@ -147,7 +148,6 @@ public class CancionUsuarioControlador {
             throw new RuntimeException("Archivo no encontrado en: " + path);
         }
         Resource resource = new UrlResource(path.toUri());
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + path.getFileName() + "\"")
                 .contentType(MediaType.parseMediaType("audio/mpeg"))
@@ -185,7 +185,6 @@ public class CancionUsuarioControlador {
                 cancionServicio.busquedaAvanzada(artista, genero, anio, esAnd)
         );
     }
-
     @GetMapping("/listar")
     public ResponseEntity<List<Cancion>> listar() {
         return ResponseEntity.ok(cancionServicio.listarTodas());
