@@ -128,24 +128,29 @@ public class CancionUsuarioControlador {
 
     @GetMapping("/reproducir-nombre")
     public ResponseEntity<Resource> reproducirPorNombre(@RequestParam String nombre) throws IOException {
+        // Buscar coincidencias por autocompletar
         List<String> coincidencias = cancionServicio.autocompletar(nombre);
         if (coincidencias.isEmpty()) {
-            return ResponseEntity.status(404)
-                    .body(null);
+            return ResponseEntity.status(404).body(null);
         }
         String nombreCancion = coincidencias.get(0);
+        // Buscar la canción por título exacto
         Cancion c = cancionServicio.listarTodas().stream()
                 .filter(can -> can.getTitulo().equalsIgnoreCase(nombreCancion))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Canción no encontrada: " + nombreCancion));
-        Path path = Paths.get(c.getRutaArchivo());
-        Resource resource = new UrlResource(path.toUri());
-        if (!resource.exists()) {
-            throw new RuntimeException("Archivo no encontrado en: " + path.toString());
+        // 📌 Ruta relativa correcta
+        Path baseDir = Paths.get("media").toAbsolutePath().normalize();
+        Path path = baseDir.resolve(c.getRutaArchivo()).normalize();
+        System.out.println("🟩 Reproduciendo por nombre desde: " + path);
+        if (!Files.exists(path)) {
+            throw new RuntimeException("Archivo no encontrado en: " + path);
         }
+        Resource resource = new UrlResource(path.toUri());
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + path.getFileName() + "\"")
-                .contentType(MediaType.valueOf("audio/mpeg"))
+                .contentType(MediaType.parseMediaType("audio/mpeg"))
                 .body(resource);
     }
 
