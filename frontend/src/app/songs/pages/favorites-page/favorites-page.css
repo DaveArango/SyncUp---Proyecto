@@ -1,0 +1,18 @@
+.contenedores-canciones {
+  margin: 1% 1% 1% 0;
+  width: 98%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: var(--color-gray-900);
+  height: 95px;
+}
+.icono-musica {
+  font-size: 65px;
+  vertical-align: 1.875em;
+}
+.contenedor-icono {
+  display: flex;
+  margin: auto;
+  justify-content: center;
+  align-content: center;
+}

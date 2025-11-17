@@ -9,6 +9,8 @@ import {FormsModule} from '@angular/forms';
   selector: 'app-search',
   imports: [SongList, CommonModule, FormsModule],
   templateUrl: './search.html',
+  standalone: true,
+  styleUrl: './search.css'
 })
 export default class Search {
   songService = inject(SongService);

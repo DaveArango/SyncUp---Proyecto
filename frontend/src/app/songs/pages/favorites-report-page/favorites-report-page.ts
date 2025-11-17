@@ -21,8 +21,11 @@ export default class FavoritesReportPage {
   constructor() {
     this.loadFavorites();
   }
-
+/*
   private get userId(): string | null {
+    return this.authService.user()?.id ?? null;
+  }*/
+  protected get userId(): string | null {
     return this.authService.user()?.id ?? null;
   }
 

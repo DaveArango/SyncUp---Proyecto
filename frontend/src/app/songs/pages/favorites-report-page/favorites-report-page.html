@@ -1,6 +1,12 @@
 <div class="favorites-container">
   <h1>Mis canciones favoritas</h1>
 
+  <!-- Si NO está logeado -->
+  <div *ngIf="!userId" style="display:flex">
+    <p>⚠ Requieres iniciar sesión para ver tus canciones favoritas</p>
+    <button routerLink="/login">Iniciar sesión</button>
+  </div>
+
   <div *ngIf="loading">
     <p>Cargando canciones...</p>
   </div>
@@ -19,3 +25,4 @@
     <button (click)="downloadCSV()">📥 Descargar CSV</button>
   </div>
 </div>
+

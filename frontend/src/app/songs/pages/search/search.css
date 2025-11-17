@@ -1,0 +1,12 @@
+.sugerencias {
+  margin-top: 53px;
+  border: none;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  width: 92%;
+}
+
+.input-buscador {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}

@@ -1,4 +1,4 @@
-<h2 class="text-2xl font-bold mt-5">Buscar Songs</h2>
+<h2 class="input-buscador text-2xl font-bold mt-5">Buscar Songs</h2>
 <h3 class="text-sm text-gray-500">Buscar por songs, descripcion o tags</h3>
 
 <section class="flex flex-col gap-2 relative">
@@ -20,7 +20,7 @@
   </div>
 
   <!-- Sugerencias de autocompletado -->
-  <ul *ngIf="suggestions().length > 0" class="border absolute bg-white w-full mt-1 rounded z-50">
+  <ul *ngIf="suggestions().length > 0" class="sugerencias border absolute bg-white w-full mt-1 rounded z-50">
     <li
       *ngFor="let s of suggestions()"
       (click)="selectSuggestion(s)"

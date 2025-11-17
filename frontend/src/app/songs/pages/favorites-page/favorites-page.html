@@ -1,12 +1,12 @@
 <div *ngFor="let song of favorites()"
-     class="w-full flex items-center gap-4 p-4 rounded-xl bg-[#1a1a1a] border border-white/5 shadow-lg
+     class="contenedores-canciones w-full flex items-center gap-4 p-4 rounded-xl bg-[#1a1a1a] border border-white/5 shadow-lg
             hover:-translate-y-1 transition-transform duration-150 relative hover:z-20">
   <!-- Left / cover -->
   <div class="flex-shrink-0">
-    <div class="relative w-16 h-16 rounded-lg overflow-hidden bg-[#111]">
-      <div class="w-full h-full bg-center bg-cover"
-           [style.background-image]="'url(/assets/cover-placeholder.png)'"
-           aria-hidden="true"></div>
+    <div class="relative w-16 rounded-lg overflow-hidden ">
+      <div class="contenedor-icono">
+        <i class="icono-musica bi bi-apple-music"></i>
+      </div>
 
       <!-- overlay (visual only), pointer-events-none evita que interfiera con clicks -->
       <div class="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity pointer-events-none">
