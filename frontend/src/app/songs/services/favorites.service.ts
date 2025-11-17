@@ -36,10 +36,13 @@ export class FavoritesService {
   }
 
   removeFavorite(username: string, songId: number): Observable<boolean> {
-    return this.http
-      .delete<boolean>(`${this.baseUrl}/usuario/${username}/favoritos/eliminar`)
-      .pipe(
-        catchError(() => of(false))
-      );
-  }
+  return this.http
+    .delete<boolean>(`${this.baseUrl}/usuario/${username}/favoritos/eliminar`, {
+      body: { songId },     // ← enviar el id
+    })
+    .pipe(
+      catchError(() => of(false))
+    );
+}
+
 }

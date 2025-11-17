@@ -1,15 +1,12 @@
-<div *ngIf="loading(); else playlist">
-  <p>Cargando Descubrimiento Semanal...</p>
+<div *ngFor="let song of similarSongs()">
+  <div class="border p-3 rounded mb-4">
+    <p class="font-bold text-lg">{{ song.titulo }}</p>
+    <p class="text-gray-600">Artista: {{ song.artista }}</p>
+    <p class="text-gray-600">Género: {{ song.genero }}</p>
+    <p class="text-gray-600">Año: {{ song.anio }}</p>
+    <p class="text-gray-600">Duración: {{ song.duracion }}</p>
+
+    <audio [src]="audioSrc(song)" controls class="mt-2 w-full"></audio>
+  </div>
 </div>
 
-<ng-template #playlist>
-  <h2>🎵 Descubrimiento Semanal</h2>
-  <ul>
-    <li *ngFor="let song of weeklyDiscovery()">
-      <!-- Ícono de disco -->
-      <i class="fa-solid fa-compact-disc" style="margin-right: 8px;"></i>
-      {{ song.titulo }}
-      <button (click)="addToFavorites(song)">❤️</button>
-    </li>
-  </ul>
-</ng-template>

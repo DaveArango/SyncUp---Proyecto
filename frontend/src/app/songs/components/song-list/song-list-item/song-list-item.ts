@@ -10,4 +10,5 @@ export class SongListItem {
   song = input.required<Song>();
   songService = inject(SongService);
   protected readonly Number = Number;
+
 }

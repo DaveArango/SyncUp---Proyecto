@@ -1,69 +1,105 @@
-import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal, OnInit } from '@angular/core';
+
+import { FavoritesService, Song } from '../../services/favorites.service';
 import { SongService } from '../../services/songs.service';
-import { FavoritesService } from '../../services/favorites.service';
-import { Song } from '../../interfaces/song.interface';
-import { AuthService } from '../../../auth/services/auth.service';
+import { GrafoService, Cancion } from '../../services/grafo.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-discovery-page',
   imports: [CommonModule],
   templateUrl: './discovery-page.html',
-  styleUrls: ['./discovery-page.css']
 })
-export default class DiscoveryPage {
-
-  weeklyDiscovery = signal<Song[]>([]);
-  loading = signal(true);
+export default class DiscoveryPage implements OnInit {
 
   private songService = inject(SongService);
-  private favoritesService = inject(FavoritesService);
-  private authService = inject(AuthService);
+  private favService = inject(FavoritesService);
+  private grafoService = inject(GrafoService);
 
-  constructor() {
-    this.loadWeeklyDiscovery();
+  similarSongs = signal<Cancion[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
+
+  strategy = signal<'user' | 'current' | 'fixed'>('user');
+
+  defaultId = 5;
+
+  // Obtener ID de la canción actual
+  get currentSongId(): number | null {
+    try {
+      const cur = (this.songService as any).currentSong?.();
+      return cur ? Number(cur.id) : null;
+    } catch {
+      return null;
+    }
   }
 
-  loadWeeklyDiscovery() {
+  ngOnInit() {
+    console.log(">>> ngOnInit ejecutado");
+    this.loadForStrategy();
+  }
+
+  async loadForStrategy() {
+    console.log(">>> loadForStrategy ejecutado");
+
     this.loading.set(true);
-    this.songService.getWeeklyDiscoveryFromAPI().subscribe({
-      next: (songsFromAPI: Song[]) => {
-        console.log('Weekly discovery recibidas:', songsFromAPI);
-        this.weeklyDiscovery.set(songsFromAPI);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Error cargando playlist', err);
-        this.weeklyDiscovery.set([]);
-        this.loading.set(false);
-      }
-    });
-  }
+    this.error.set(null);
 
-  addToFavorites(song: Song) {
-    // AuthService.user() devuelve el usuario directamente (no es función)
-    const currentUser = this.authService.user();
+    let idToUse: number | null = null;
+    const strat = this.strategy();
 
-    if (!currentUser) {
-      console.error('Usuario no autenticado');
-      return;
-    }
-
-    const username = currentUser.username;
-    if (!username) {
-      console.error('El usuario no tiene username (requerido por el backend)');
-      return;
-    }
-
-    this.favoritesService.addFavorite(username, song.id).subscribe({
-      next: (ok: boolean) => {
-        if (ok) {
-          console.log(`${song.titulo ?? song.id} agregado a favoritos`);
-        } else {
-          console.error('No se pudo agregar a favoritos');
+    try {
+      // --- Estrategia USER ---
+      if (strat === 'user') {
+        const username = localStorage.getItem('username');
+        if (username) {
+          const favs = await this.favService.getFavorites(username).toPromise();
+          if (favs && favs.length > 0) {
+            idToUse = Number(favs[0].id);
+          }
         }
-      },
-      error: (err) => console.error('Error al agregar favorito:', err)
-    });
+      }
+
+      // --- Estrategia CURRENT ---
+      if (!idToUse && (strat === 'user' || strat === 'current')) {
+        const curId = this.currentSongId;
+        if (curId) idToUse = curId;
+      }
+
+      // --- Estrategia FIXED ---
+      if (!idToUse) idToUse = this.defaultId;
+
+      console.log(">>> ID utilizado:", idToUse);
+
+      // --- Llamar al endpoint de similares ---
+      this.grafoService.obtenerSimilares(idToUse).subscribe({
+        next: (songs) => {
+          console.log(">>> Canciones similares recibidas:", songs);
+
+          this.similarSongs.set(songs || []);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          console.error(">>> ERROR obteniendo similares:", err);
+          this.similarSongs.set([]);
+          this.error.set('Error cargando recomendaciones');
+          this.loading.set(false);
+        }
+      });
+
+    } catch (err) {
+      console.error(">>> ERROR inesperado en loadForStrategy:", err);
+      this.error.set('Error inesperado');
+      this.loading.set(false);
+    }
   }
+
+  onChangeStrategy(s: 'user' | 'current' | 'fixed') {
+    this.strategy.set(s);
+    this.loadForStrategy();
+  }
+  audioSrc(song: Cancion): string {
+  return this.songService.getSongAudioUrl(song.id);
+}
+
 }

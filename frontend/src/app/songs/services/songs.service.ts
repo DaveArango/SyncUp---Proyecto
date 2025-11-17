@@ -73,4 +73,8 @@ export class SongService {
     return this.http.delete(`${environment.baseUrl}/usuario/canciones/favoritos/${userId}/${songId}`);
   }
 
+  getSimilarSongs(id: number) {
+  return this.http.get<Song[]>(`${environment.baseUrl}/grafo/similares/${id}`)
+}
+
 }
