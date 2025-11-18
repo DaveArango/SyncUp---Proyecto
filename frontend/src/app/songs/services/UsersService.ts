@@ -3,58 +3,72 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-// Interface User ajustada al backend
+// Interface adaptada al backend
 export interface User {
   username: string;
-  name: string;           // mapeado de 'nombre' del backend
-  role: 'user' | 'admin'; // mapeado de 'rol' del backend
-  isFollowing?: boolean;  // opcional para front
+  name: string;
+  role: 'user' | 'admin';
+  isFollowing?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {
 
-  private baseUrl = 'http://localhost:8080/api/usuario';
+  private baseUrl = 'http://localhost:8080/api';
 
   suggestions = signal<User[]>([]);
   loading = signal<boolean>(false);
 
   constructor(private http: HttpClient) {}
 
-  // Cargar sugerencias de amigos
-  loadSuggestions(username: string) {
+  /** Cargar sugerencias usando el endpoint real */
+  loadSuggestions(username: string, amigos: string[]) {
     this.loading.set(true);
 
-    this.http.get<any[]>(`${this.baseUrl}/grafo-social/amigos-de-amigos/${username}`)
-      .pipe(tap(() => this.loading.set(false)))
-      .subscribe(
-        data => {
-          // Mapear campos del backend a la interface User
-          const mapped: User[] = data.map(u => ({
-            username: u.username,
-            name: u.nombre,
-            role: u.rol.toLowerCase() === 'admin' ? 'admin' : 'user',
-            isFollowing: false // inicializar por defecto
-          }));
+    this.http
+      .get<any[]>(`${this.baseUrl}/grafo-social/amigos-de-amigos/${username}`, {
+        params: { niveles: 2 }
+      })
+      .subscribe({
+        next: (data: any[]) => {
+
+          const mapped: User[] = data.map((u: any): User => {
+            const role: 'admin' | 'user' =
+              (u?.rol?.toLowerCase() === 'administrador') ? 'admin' : 'user';
+
+            return {
+              username: String(u.username ?? ''),
+              name: String(u.nombre ?? ''),
+              role,
+              isFollowing: amigos.includes(String(u.username ?? ''))
+            };
+          });
+
           this.suggestions.set(mapped);
+          this.loading.set(false);
         },
-        err => {
-          console.error('Error cargando sugerencias:', err);
+        error: err => {
+          console.error("Error:", err);
           this.suggestions.set([]);
           this.loading.set(false);
         }
-      );
+      });
   }
 
-  // Seguir a un usuario
+
+
+  // Seguir
   followUser(username: string, toFollow: string): Observable<boolean> {
-    return this.http.post(`${this.baseUrl}/${username}/seguir/${toFollow}`, {})
+
+    return this.http
+      .post(`${this.baseUrl}/usuario/${username}/seguir/${toFollow}`, {})
       .pipe(map(() => true));
   }
 
-  // Dejar de seguir a un usuario
+  // Dejar de seguir
   unfollowUser(username: string, toUnfollow: string): Observable<boolean> {
-    return this.http.post(`${this.baseUrl}/${username}/dejarDeSeguir/${toUnfollow}`, {})
+    return this.http
+      .post(`${this.baseUrl}/usuario/${username}/dejarDeSeguir/${toUnfollow}`, {})
       .pipe(map(() => true));
   }
 }

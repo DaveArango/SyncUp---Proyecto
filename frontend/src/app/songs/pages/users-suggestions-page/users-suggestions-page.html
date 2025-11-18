@@ -1,20 +1,38 @@
-<div class="suggestions-container">
-  <h2>Usuarios sugeridos</h2>
+<h2 class="title">Usuarios sugeridos</h2>
 
-  <div *ngIf="loading(); else usersList">
-    <p>Cargando sugerencias...</p>
+<div *ngIf="loading()" class="loading">
+  Cargando usuarios...
+</div>
+
+<div *ngIf="!loading() && suggestions().length === 0" class="empty">
+  No hay sugerencias por ahora.
+</div>
+
+<div class="users-container" *ngIf="!loading() && suggestions().length > 0">
+
+  <div class="user-card" *ngFor="let u of suggestions()">
+
+    <div class="user-info">
+      <div class="user-name">{{ u.name }}</div>
+      <div class="user-username">@{{ u.username }}</div>
+    </div>
+
+    <button
+      *ngIf="!u.isFollowing"
+      class="btn follow"
+      (click)="follow(u)"
+      [disabled]="u.isFollowing"
+    >
+    Seguir
+    </button>
+
+
+    <button
+      *ngIf="u.isFollowing"
+      class="btn unfollow"
+      (click)="unfollow(u)">
+      Dejar de seguir
+    </button>
+
   </div>
-
-  <ng-template #usersList>
-    <ul>
-      <li *ngFor="let user of suggestions()">
-        <div class="user-info">
-          <strong>{{ user.name }}</strong> (@{{ user.username }})
-        </div>
-        <button (click)="toggleFollow(user)">
-          {{ user.isFollowing ? 'Dejar de seguir' : 'Seguir' }}
-        </button>
-      </li>
-    </ul>
-  </ng-template>
 </div>

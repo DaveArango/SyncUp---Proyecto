@@ -1,44 +1,79 @@
-.suggestions-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 16px;
-  font-family: Arial, sans-serif;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 16px;
+.title {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
   color: #333;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
+.loading,
+.empty {
+  text-align: center;
+  padding: 1rem;
+  color: #777;
 }
 
-li {
+.users-container {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.user-card {
+  display: flex;
   justify-content: space-between;
-  padding: 8px 12px;
-  border-bottom: 1px solid #eee;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 10px;
+  background-color: #fafafa;
+  border: 1px solid #eee;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
 }
 
-button {
-  background-color: #6c63ff;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-button:hover {
-  background-color: #5751d6;
+.user-card:hover {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
 .user-info {
   display: flex;
   flex-direction: column;
+}
+
+.user-name {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #222;
+}
+
+.user-username {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  border: none;
+  transition: 0.2s ease;
+}
+
+.btn.follow {
+  background-color: #4a7dff;
+  color: white;
+}
+
+.btn.follow:hover {
+  background-color: #3a63d6;
+}
+
+.btn.unfollow {
+  background-color: #ff4f4f;
+  color: white;
+}
+
+.btn.unfollow:hover {
+  background-color: #d63e3e;
 }
