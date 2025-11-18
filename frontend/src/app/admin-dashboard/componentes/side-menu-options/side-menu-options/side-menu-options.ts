@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import {RouterLink, RouterLinkActive} from '@angular/router';
 
 interface MenuOption{
   label: string;
@@ -12,7 +12,7 @@ interface MenuOption{
 @Component({
   selector: 'admin-side-menu-options',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, RouterLinkActive],
   templateUrl: './side-menu-options.html',
   styleUrls: ['./side-menu-options.css'],
 })

@@ -34,14 +34,14 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #1db954;
+  border-color: #22b91d;
   box-shadow: 0 0 6px rgba(29, 185, 84, 0.5);
 }
 
 /* Botón de login */
 .login-btn {
   width: 100%;
-  background-color: #1db954;
+  background-color: #1db925;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -54,7 +54,7 @@
 }
 
 .login-btn:hover {
-  background-color: #1ed760;
+  background-color: #24d71e;
   transform: translateY(-2px);
 }
 
@@ -67,14 +67,14 @@
 }
 
 .register-text a {
-  color: #1db954;
+  color: #27b91d;
   font-weight: 600;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .register-text a:hover {
-  color: #1ed760;
+  color: #24d71e;
   text-decoration: underline;
 }
 
