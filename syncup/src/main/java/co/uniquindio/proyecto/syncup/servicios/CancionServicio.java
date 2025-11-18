@@ -97,7 +97,7 @@ public class CancionServicio {
         return cancionRepositorio.findAll();
     }
 
-    public List<Cancion> descubrimientoSemanal(Usuario usuario, int max) {
+    /*public List<Cancion> descubrimientoSemanal(Usuario usuario, int max) {
         // Evitar error si no tiene favoritos
         if (usuario.getListaFavoritos() == null || usuario.getListaFavoritos().isEmpty()) {
             return new ArrayList<>();
@@ -128,7 +128,47 @@ public class CancionServicio {
 
         List<Cancion> listaFinal = new ArrayList<>(recomendadas);
         return listaFinal.subList(0, Math.min(max, listaFinal.size()));
+    }*/
+
+    public List<Cancion> descubrimientoSemanal(Usuario usuario, int max) {
+
+        if (usuario.getListaFavoritos() == null || usuario.getListaFavoritos().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        if (grafoSimilitudServicio.getGrafo() == null) {
+            throw new RuntimeException("El grafo de similitud no está inicializado");
+        }
+
+        Set<Cancion> favoritos = new HashSet<>(usuario.getListaFavoritos());
+        Map<Cancion, Double> puntuaciones = new HashMap<>();
+
+        // ⭐ Recomendar basándose SOLO en similitud directa
+        for (Cancion fav : favoritos) {
+
+            NodoCancion nodo = grafoSimilitudServicio.getGrafo().obtenerNodo(fav);
+            if (nodo == null) continue;
+
+            // Recorre solo vecinos directos (similares inmediatos)
+            for (Map.Entry<NodoCancion, Double> entry : nodo.getVecinos().entrySet()) {
+                Cancion similar = entry.getKey().getCancion();
+                double similitud = entry.getValue(); // ya es 0...1
+
+                if (favoritos.contains(similar)) continue;
+
+                // ⭐ Acumulamos la similitud de distintos favoritos
+                puntuaciones.merge(similar, similitud, Double::sum);
+            }
+        }
+
+        // ⭐ Ordenar por puntuación total (más parecido primero)
+        return puntuaciones.entrySet().stream()
+                .sorted(Map.Entry.<Cancion, Double>comparingByValue().reversed())
+                .limit(max)
+                .map(Map.Entry::getKey)
+                .toList();
     }
+
 
     public Queue<Cancion> iniciarRadio(Cancion cancionInicio, int max) {
         Queue<Cancion> cola = new LinkedList<>();

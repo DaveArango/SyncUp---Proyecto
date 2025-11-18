@@ -1,12 +1,68 @@
-<div *ngFor="let song of similarSongs()">
-  <div class="border p-3 rounded mb-4">
-    <p class="font-bold text-lg">{{ song.titulo }}</p>
-    <p class="text-gray-600">Artista: {{ song.artista }}</p>
-    <p class="text-gray-600">Género: {{ song.genero }}</p>
-    <p class="text-gray-600">Año: {{ song.anio }}</p>
-    <p class="text-gray-600">Duración: {{ song.duracion }}</p>
+<!-- ============================
+     DESCUBRIMIENTO SEMANAL
+=============================== -->
+<section class="mt-6">
+  <h2 class="text-3xl font-bold mb-6 text-blue-700 flex items-center gap-2">
+    🎧 Descubrimiento Semanal
+  </h2>
 
-    <audio [src]="audioSrc(song)" controls class="mt-2 w-full"></audio>
+  <!-- Sin resultados -->
+  <div *ngIf="descubrimientoSongs().length === 0"
+       class="text-gray-500 mb-6 italic">
+    No hay canciones de descubrimiento semanal.
   </div>
-</div>
 
+  <!-- Cards -->
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div *ngFor="let song of descubrimientoSongs()"
+         class="p-5 border rounded-xl shadow-sm hover:shadow-md transition bg-white">
+
+      <h3 class="text-xl font-bold mb-1 text-gray-800">{{ song.titulo }}</h3>
+      <p class="text-gray-600"><strong>Artista:</strong> {{ song.artista }}</p>
+      <p class="text-gray-600"><strong>Género:</strong> {{ song.genero }}</p>
+      <p class="text-gray-600"><strong>Año:</strong> {{ song.anio }}</p>
+      <p class="text-gray-600"><strong>Duración:</strong> {{ song.duracion }} min</p>
+
+      <audio
+        [src]="songService.getSongAudioUrl(song.id)"
+        controls
+        class="w-full mt-4 rounded"
+      ></audio>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================
+          SIMILARES (DESACTIVADO)
+=============================== -->
+<!--
+<section class="mt-12">
+  <h2 class="text-3xl font-bold mb-6 text-purple-700 flex items-center gap-2">
+    🎶 Canciones Similares
+  </h2>
+
+  <div *ngIf="similarSongs().length === 0"
+       class="text-gray-500 italic">
+    No hay canciones similares para mostrar.
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div *ngFor="let song of similarSongs()"
+         class="p-5 border rounded-xl shadow-sm hover:shadow-md transition bg-white">
+
+      <h3 class="text-xl font-bold mb-1 text-gray-800">{{ song.titulo }}</h3>
+      <p class="text-gray-600"><strong>Artista:</strong> {{ song.artista }}</p>
+      <p class="text-gray-600"><strong>Género:</strong> {{ song.genero }}</p>
+      <p class="text-gray-600"><strong>Año:</strong> {{ song.anio }}</p>
+      <p class="text-gray-600"><strong>Duración:</strong> {{ song.duracion }} min</p>
+
+      <audio
+        [src]="songService.getSongAudioUrl(song.id)"
+        controls
+        class="w-full mt-4 rounded"
+      ></audio>
+    </div>
+  </div>
+</section>
+-->

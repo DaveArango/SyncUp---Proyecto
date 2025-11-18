@@ -1,30 +1,37 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-
 import { FavoritesService, Song } from '../../services/favorites.service';
 import { SongService } from '../../services/songs.service';
 import { GrafoService, Cancion } from '../../services/grafo.service';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-discovery-page',
   imports: [CommonModule],
   templateUrl: './discovery-page.html',
+  standalone: true
 })
 export default class DiscoveryPage implements OnInit {
 
-  private songService = inject(SongService);
+  // ====== SERVICES ======
+  protected songService = inject(SongService);
   private favService = inject(FavoritesService);
   private grafoService = inject(GrafoService);
+  private authService = inject(AuthService);
 
+  // ====== SIGNALS ======
   similarSongs = signal<Cancion[]>([]);
+  descubrimientoSongs = signal<Cancion[]>([]);   // <--- NUEVA lista
   loading = signal(false);
   error = signal<string | null>(null);
 
   strategy = signal<'user' | 'current' | 'fixed'>('user');
 
+  // ====== PROPIEDADES ======
   defaultId = 5;
+  audioUrl = '';
 
-  // Obtener ID de la canción actual
+  // ====== GETTERS ======
   get currentSongId(): number | null {
     try {
       const cur = (this.songService as any).currentSong?.();
@@ -34,11 +41,7 @@ export default class DiscoveryPage implements OnInit {
     }
   }
 
-  ngOnInit() {
-    console.log(">>> ngOnInit ejecutado");
-    this.loadForStrategy();
-  }
-
+  // ====== MÉTODO PRINCIPAL DE CARGA ======
   async loadForStrategy() {
     console.log(">>> loadForStrategy ejecutado");
 
@@ -49,7 +52,7 @@ export default class DiscoveryPage implements OnInit {
     const strat = this.strategy();
 
     try {
-      // --- Estrategia USER ---
+      // Estrategia USER
       if (strat === 'user') {
         const username = localStorage.getItem('username');
         if (username) {
@@ -60,22 +63,21 @@ export default class DiscoveryPage implements OnInit {
         }
       }
 
-      // --- Estrategia CURRENT ---
+      // Estrategia CURRENT
       if (!idToUse && (strat === 'user' || strat === 'current')) {
         const curId = this.currentSongId;
         if (curId) idToUse = curId;
       }
 
-      // --- Estrategia FIXED ---
+      // Estrategia FIXED
       if (!idToUse) idToUse = this.defaultId;
 
       console.log(">>> ID utilizado:", idToUse);
 
-      // --- Llamar al endpoint de similares ---
+      // Llamar recomendación de similares
       this.grafoService.obtenerSimilares(idToUse).subscribe({
         next: (songs) => {
           console.log(">>> Canciones similares recibidas:", songs);
-
           this.similarSongs.set(songs || []);
           this.loading.set(false);
         },
@@ -94,12 +96,42 @@ export default class DiscoveryPage implements OnInit {
     }
   }
 
+  // ====== CAMBIO DE ESTRATEGIA ======
   onChangeStrategy(s: 'user' | 'current' | 'fixed') {
     this.strategy.set(s);
     this.loadForStrategy();
   }
-  audioSrc(song: Cancion): string {
-  return this.songService.getSongAudioUrl(song.id);
-}
 
+  // ====== LIFECYCLE ======
+  ngOnInit() {
+    console.log(">>> ngOnInit ejecutado");
+    const currentUser = this.authService.user();
+
+    if (!currentUser || !currentUser.username) {
+      console.warn('Usuario no disponible o no tiene username', currentUser);
+      return;
+    }
+
+    const username = currentUser.username as string;
+
+    // 1. Cargar recomendaciones según estrategia
+    this.loadForStrategy();
+
+    // 2. Cargar descubrimiento semanal
+    debugger;
+    if (username) {
+      this.songService.getSongDescubrimientoSemanal(username)
+        .subscribe({
+          next: (canciones) => {
+            this.descubrimientoSongs.set(canciones || []);
+
+            if (canciones.length > 0) {
+              const primera = canciones[0];
+              this.audioUrl = this.songService.getSongAudioUrl(primera.id);
+            }
+          },
+          error: (err) => console.error(err)
+        });
+    }
+  }
 }

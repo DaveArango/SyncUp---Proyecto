@@ -100,4 +100,12 @@ getRadioSongs(id: number) {
     });
   }
 
+
+  getSongDescubrimientoSemanal(username: string) {
+    debugger;
+    return this.http.get<Song[]>(
+      `${environment.baseUrl}/usuario/canciones/descubrimiento/${username}`
+    );
+  }
+
 }
