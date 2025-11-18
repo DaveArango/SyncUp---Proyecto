@@ -5,6 +5,7 @@ import co.uniquindio.proyecto.syncup.entidades.Usuario;
 
 import co.uniquindio.proyecto.syncup.grafos.NodoCancion;
 import co.uniquindio.proyecto.syncup.repositorios.CancionRepositorio;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,14 +27,21 @@ public class CancionServicio {
     private final TrieServicio trieServicio;
     private final GrafoSimilitudServicio grafoSimilitudServicio;
 
+
     public CancionServicio(CancionRepositorio cancionRepositorio,
                            TrieServicio trieServicio,
                           GrafoSimilitudServicio grafoSimilitudServicio) {
         this.cancionRepositorio = cancionRepositorio;
         this.trieServicio = trieServicio;
         this.grafoSimilitudServicio = grafoSimilitudServicio;
-        construirGrafoSimilitud();
+
     }
+
+    @PostConstruct
+    public void inicializarGrafo() {
+        construirGrafoSimilitud();  // ✔ se ejecuta DESPUÉS de que Spring inyecta los mocks correctamente
+    }
+
 
     public void construirGrafoSimilitud() {
         List<Cancion> canciones = cancionRepositorio.findAll();
@@ -221,7 +229,8 @@ public String guardarArchivo(MultipartFile archivo) {
         if (anio != null) {
             Thread hiloAnio = new Thread(() -> {
                 for (Cancion c : todas) {
-                    if (c.getAnio() != null && c.getAnio() == anio) {
+                    if (c.getAnio() != null && c.getAnio().equals(anio)) {
+
                         resultadoAnio.add(c);
                     }
                 }

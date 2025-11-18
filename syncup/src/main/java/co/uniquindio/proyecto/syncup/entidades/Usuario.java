@@ -83,6 +83,7 @@ import java.util.Objects;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Getter
 @Setter
+
 public class Usuario {
 
     @Id
