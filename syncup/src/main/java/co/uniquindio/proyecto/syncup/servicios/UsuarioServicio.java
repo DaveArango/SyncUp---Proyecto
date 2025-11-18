@@ -164,5 +164,19 @@ public class UsuarioServicio {
         return usuario.getAmigos();
     }
 
+    @Transactional
+    public void eliminarUsuario(String username) {
+
+        Usuario usuario = usuarioRepositorio.findById(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
+
+        // Eliminar relaciones en grafo
+        grafoSocialServicio.eliminarConexionTotal(usuario);
+
+        usuarioRepositorio.delete(usuario);
+    }
+
+
+
 
 }

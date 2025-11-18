@@ -103,4 +103,18 @@ public class GrafoSocialServicio {
         sugerencias.remove(usuario);
         return new ArrayList<>(sugerencias);
     }
+
+    public void eliminarConexionTotal(Usuario usuario) {
+        NodoUsuario nodo = grafo.obtenerNodo(usuario);
+        if (nodo == null) return;
+
+        // Eliminar conexiones desde otros nodos
+        for (NodoUsuario n : grafo.getNodos().values()) {
+            n.getAmigos().remove(nodo);
+        }
+
+        // Eliminar el nodo del grafo
+        grafo.getNodos().remove((long) usuario.getUsername().hashCode());
+    }
+
 }

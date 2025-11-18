@@ -71,5 +71,21 @@ public class CancionAdminControlador {
     public ResponseEntity<List<Cancion>> listar() {
         return ResponseEntity.ok(cancionServicio.listarTodas());
     }
+
+
+    @PostMapping("/carga-masiva")
+    public ResponseEntity<?> cargaMasiva(@RequestParam("archivo") MultipartFile archivo) {
+
+        try {
+            int totalInsertadas = cancionServicio.cargarCancionesDesdeArchivo(archivo);
+            return ResponseEntity.ok(Map.of(
+                    "mensaje", "Carga masiva realizada",
+                    "insertadas", totalInsertadas
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }
 
