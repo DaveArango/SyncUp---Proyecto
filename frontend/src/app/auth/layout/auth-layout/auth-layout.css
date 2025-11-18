@@ -1,88 +1,131 @@
-/* Fondo general */
+/* 🎧 Fondo general oscuro */
 :host {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #121212 0%, #1f1f1f 100%);
+  background: radial-gradient(circle at top, #0b0b0b, #000 80%);
   color: #fff;
   font-family: 'Montserrat', sans-serif;
-  padding: 0;
 }
 
-/* Tarjeta del formulario */
+/* 🎵 Tarjeta */
 .auth-card {
-  background: #181818;
-  border: 1px solid #282828;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
-  padding: 2rem;
+  background: rgba(20, 20, 20, 0.9);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  padding: 2.4rem;
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
   text-align: center;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.18); /* Glow verde */
+  animation: slide-up 0.7s ease forwards;
+  opacity: 0;
 }
 
-/* Título */
+/* ✨ Animación de entrada */
+@keyframes slide-up {
+  0% { transform: translateY(50px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* ✨ Fade suave */
+.fade-in {
+  animation: fade-in 0.8s ease;
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 🎯 Título */
 .auth-card h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #1db954; /* Verde Spotify */
-  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #10b981; /* Verde emerald */
+  margin-bottom: 1.8rem;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+  animation: title-pop 0.6s ease;
 }
 
-/* Inputs */
+@keyframes title-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* 🟩 Inputs */
 .auth-card input {
   width: 100%;
-  background: #121212;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 0.8rem;
   color: #fff;
-  font-size: 0.95rem;
-  transition: border-color 0.3s ease;
+  font-size: 1rem;
+  margin-top: 0.7rem;
+  transition: all 0.3s ease;
 }
 
 .auth-card input:focus {
-  outline: none;
-  border-color: #1db954;
+  border-color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  transform: scale(1.02);
 }
 
-/* Botón */
+/* 🔥 Botón premium verde */
 .auth-card button {
   width: 100%;
-  background-color: #1db954;
+  background: linear-gradient(135deg, #10b981, #059669); /* Verde → verde oscuro */
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 0.75rem;
-  font-weight: 600;
-  font-size: 1rem;
+  border-radius: 12px;
+  padding: 0.85rem;
+  font-weight: 700;
+  font-size: 1.05rem;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: 1rem;
+  transition: all 0.25s ease;
+  margin-top: 1.2rem;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
 }
 
 .auth-card button:hover {
-  background-color: #1ed760;
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.55);
 }
 
-/* Enlace */
+.auth-card button:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* 🔗 Enlaces */
 .auth-card a {
-  color: #1db954;
+  color: #10b981;
   text-decoration: none;
   font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .auth-card a:hover {
-  text-decoration: underline;
+  color: #34d399;
+  text-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
 }
 
-/* Mensaje de error */
+/* ❗ Error */
 .alert {
-  background-color: #e02424;
+  background: rgba(255, 45, 85, 0.9);
   color: #fff;
-  border-radius: 8px;
-  padding: 0.75rem;
-  margin-top: 1rem;
+  border-radius: 12px;
+  padding: 0.9rem;
+  margin-top: 1.2rem;
+  animation: shake 0.4s ease;
+}
+
+/* ❗ Animación de error */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-4px); }
 }
