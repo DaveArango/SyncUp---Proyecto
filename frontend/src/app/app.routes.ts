@@ -1,95 +1,100 @@
 import { Routes } from '@angular/router';
-import { isNotAuthenticatedGuard } from './auth/guards/is-not-authenticated.guard';
-import { authGuard } from './auth/guards/auth.guard';
-
-
 
 export const routes: Routes = [
 
+  // 🔐 Rutas de autenticación
   {
-
     path: 'auth',
-    canActivate: [isNotAuthenticatedGuard],
-    loadChildren: () => import('./auth/auth.routes'),
+    loadChildren: () =>
+      import('./auth/auth.routes').then((m) => m.authRoutes),
   },
-    // Rutas de administrador
-   // 🛠️ Rutas del administrador (Lazy Loaded)
+
+  // 🛠️ Rutas del administrador (Lazy Loading)
   {
     path: 'admin',
     loadChildren: () =>
       import('./admin-dashboard/admin-dashboard.routes'),
   },
 
-
+  // 🎵 Rutas del usuario con dashboard
   {
     path: 'dashboard',
-    canActivate: [authGuard],
-    loadComponent: () => import('./songs/pages/dasboard-page/dasboard-page'),
-    children:[
-       {
+    loadComponent: () =>
+      import('./songs/pages/dasboard-page/dasboard-page'),
+    children: [
+      {
         path: 'trending',
-        loadComponent: () => import('./songs/pages/trending-page/trending-page'),
+        loadComponent: () =>
+          import('./songs/pages/trending-page/trending-page'),
       },
       {
         path: 'amigos',
         loadComponent: () =>
           import('./songs/pages/amigos-page/amigos-page')
-            .then(m => m.default)
+            .then(m => m.default),
       },
       {
         path: 'search',
-        loadComponent: () => import('./songs/pages/search/search'),
+        loadComponent: () =>
+          import('./songs/pages/search/search'),
       },
       {
         path: 'searchAvanzada',
-        loadComponent: () => import('./songs/pages/busqueda-avanzada-page/busqueda-avanzada-page'),
+        loadComponent: () =>
+          import('./songs/pages/busqueda-avanzada-page/busqueda-avanzada-page'),
       },
       {
         path: 'history/:query',
-        loadComponent: () => import('./songs/pages/song-history/song-history'),
+        loadComponent: () =>
+          import('./songs/pages/song-history/song-history'),
       },
       {
         path: 'favorites',
-        loadComponent: () => import('./songs/pages/favorites-page/favorites-page'),
+        loadComponent: () =>
+          import('./songs/pages/favorites-page/favorites-page'),
       },
       {
         path: 'discovery',
-        loadComponent: () => import('./songs/pages/discovery-page/discovery-page'),
+        loadComponent: () =>
+          import('./songs/pages/discovery-page/discovery-page'),
       },
       {
         path: 'radio',
-        loadComponent: () => import('./songs/pages/radio-page/radio-page'),
+        loadComponent: () =>
+          import('./songs/pages/radio-page/radio-page'),
       },
       {
         path: 'users-suggestions',
-        loadComponent: () => import('./songs/pages/users-suggestions-page/users-suggestions-page'),
+        loadComponent: () =>
+          import('./songs/pages/users-suggestions-page/users-suggestions-page'),
       },
       {
         path: 'favorites-report',
-        loadComponent: () => import('./songs/pages/favorites-report-page/favorites-report-page'),
+        loadComponent: () =>
+          import('./songs/pages/favorites-report-page/favorites-report-page'),
       },
       {
         path: 'profile',
-        loadComponent: () => import('./songs/pages/profile-page/profile-page'),
+        loadComponent: () =>
+          import('./songs/pages/profile-page/profile-page'),
       },
       {
         path: '**',
-        redirectTo: 'trending'
-      }
-
+        redirectTo: 'trending',
+      },
     ],
   },
 
-
-
+  // 👉 Cuando el usuario entra al front sin ruta → login
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'auth/login',
     pathMatch: 'full',
   },
 
+  // 👉 Cualquier ruta no encontrada → login
   {
-    path:'**',
-    redirectTo: 'dashboard',
-  }
+    path: '**',
+    redirectTo: 'auth/login',
+  },
 ];

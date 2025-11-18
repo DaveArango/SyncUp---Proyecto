@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-login-page',
   imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  standalone: true,
   templateUrl: './login-page.html',
   styleUrls: ['./login-page.css']
 })
