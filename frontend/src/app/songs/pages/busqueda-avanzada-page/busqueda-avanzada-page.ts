@@ -9,10 +9,11 @@ import {FormsModule} from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './busqueda-avanzada-page.html',
+  styleUrl: 'busqueda-avanzada-page.css'
 })
 export default class BusquedaAvanzadaPage {
 
-  private songService = inject(SongService);
+  protected songService = inject(SongService);
 
   artista = signal('');
   genero = signal('');

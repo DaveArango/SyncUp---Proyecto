@@ -1,54 +1,82 @@
-<div class="p-5 max-w-xl mx-auto">
+<div class="p-6 max-w-xl mx-auto bg-white shadow-lg rounded-xl">
 
-  <h2 class="text-xl font-bold mb-4">Búsqueda Avanzada</h2>
+  <h2 class="titulo-busqueda-avanzada text-2xl font-bold mb-6 text-center ">
+    Búsqueda Avanzada 🎵
+  </h2>
 
-  <label>Artista</label>
-  <input
-    class="border w-full p-2 mb-2"
-    [(ngModel)]="artista"
-  >
+  <!-- Artista -->
+  <div class="mb-4">
+    <label class="font-semibold text-gray-700">Artista</label>
+    <input
+      class="border w-full p-2 rounded-lg focus:ring focus:ring-blue-300 outline-none"
+      [(ngModel)]="artista"
+      placeholder="Ingrese artista..."
+    >
+  </div>
 
-  <label>Género</label>
-  <input
-    class="border w-full p-2 mb-2"
-    [(ngModel)]="genero"
-  >
+  <!-- Género -->
+  <div class="mb-4">
+    <label class="font-semibold text-gray-700">Género</label>
+    <input
+      class="border w-full p-2 rounded-lg focus:ring focus:ring-blue-300 outline-none"
+      [(ngModel)]="genero"
+      placeholder="Ingrese género..."
+    >
+  </div>
 
-  <label>Año</label>
-  <input
-    type="number"
-    class="border w-full p-2 mb-2"
-    [(ngModel)]="anio"
-  >
+  <!-- Año -->
+  <div class="mb-4">
+    <label class="font-semibold text-gray-700">Año</label>
+    <input
+      type="number"
+      class="border w-full p-2 rounded-lg focus:ring focus:ring-blue-300 outline-none"
+      [(ngModel)]="anio"
+      placeholder="Ingrese año..."
+    >
+  </div>
 
-  <label>Modo</label>
-  <select
-    class="border w-full p-2 mb-4"
-    [(ngModel)]="esAnd"
-  >
-    <option [ngValue]="true">AND (todas deben coincidir)</option>
-    <option [ngValue]="false">OR (alguna puede coincidir)</option>
-  </select>
+  <!-- Modo -->
+  <div class="mb-4">
+    <label class="font-semibold text-gray-700">Modo</label>
+    <select
+      class="border w-full p-2 rounded-lg bg-white focus:ring focus:ring-blue-300 outline-none"
+      [(ngModel)]="esAnd"
+    >
+      <option [ngValue]="true">🔗 AND (todas deben coincidir)</option>
+      <option [ngValue]="false">🔎 OR (alguna puede coincidir)</option>
+    </select>
+  </div>
 
+  <!-- Botón -->
   <button
-    class="px-4 py-2 bg-blue-600 text-white rounded"
+    class="btn-buscar w-full py-2 text-white font-semibold rounded-lg transition"
     (click)="buscar()"
   >
     Buscar
   </button>
 
-  <div class="mt-5">
-    <h3 class="text-lg font-bold">Resultados:</h3>
+  <!-- Resultados -->
+  <div class="mt-6">
+    <h3 class="text-lg font-bold mb-2">Resultados:</h3>
 
-    <div *ngIf="buscando()">Buscando...</div>
-    <div *ngIf="!buscando() && resultados().length === 0">Sin resultados</div>
+    <div *ngIf="buscando()" class="text-gray-500">Buscando...</div>
+    <div *ngIf="!buscando() && resultados().length === 0" class="text-gray-500">
+      Sin resultados
+    </div>
 
     <div *ngFor="let s of resultados()"
-         class="border p-3 mt-2 rounded">
-      <p><strong>{{ s.titulo }}</strong></p>
-      <p>Artista: {{ s.artista }}</p>
-      <p>Género: {{ s.genero }}</p>
-      <p>Año: {{ s.anio }}</p>
+         class="border p-4 mt-3 rounded-lg shadow-sm bg-gray-50">
+
+      <p class="text-lg font-semibold text-blue-700">{{ s.titulo }}</p>
+      <p class="text-sm text-gray-700"><strong>Artista:</strong> {{ s.artista }}</p>
+      <p class="text-sm text-gray-700"><strong>Género:</strong> {{ s.genero }}</p>
+      <p class="text-sm text-gray-700"><strong>Año:</strong> {{ s.anio }}</p>
+
+      <audio
+        [src]="songService.getSongAudioUrl(s.id)"
+        controls
+        class="w-full mt-3 rounded-lg"
+      ></audio>
     </div>
   </div>
 </div>
