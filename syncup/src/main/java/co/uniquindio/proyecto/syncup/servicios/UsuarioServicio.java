@@ -10,6 +10,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+/**
+ * Servicio encargado de las operaciones relacionadas con usuarios:
+ * registro, eliminación, y acceso en memoria mediante un HashMap para O(1).
+ *
+ * Mantiene además la sincronización con la base de datos y el grafo social.
+ */
+
 @Service
 public class UsuarioServicio {
 

@@ -14,7 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+/**
+ * Controlador REST para operaciones relacionadas con usuarios.
+ */
 @RestController
 @RequestMapping("/api/usuario")
 public class UsuarioControlador {

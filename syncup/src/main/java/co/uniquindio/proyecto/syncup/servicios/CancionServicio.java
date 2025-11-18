@@ -19,6 +19,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Servicio que gestiona las canciones: CRUD, búsquedas avanzadas, trie para autocompletar
+ * y grafo de similitud para recomendaciones.
+ */
+
 @Service
 public class CancionServicio {
 

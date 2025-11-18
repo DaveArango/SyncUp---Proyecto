@@ -10,6 +10,14 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entidad que modela una canción del catálogo.
+ *
+ * <p>Contiene metadatos usados por búsqueda, grafo de similitud y reproducción.
+ *
+ * @since 1.0
+ */
+
 @Entity
 @Table(name = "canciones")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

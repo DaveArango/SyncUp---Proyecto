@@ -78,6 +78,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Entidad que representa un usuario del sistema.
+ * Contiene credenciales y la lista de canciones favoritas.
+ *
+ * <p>Campos principales:
+ * <ul>
+ *   <li>username: identificador único</li>
+ *   <li>password: contraseña (almacenada hashed en producción)</li>
+ *   <li>listaFavoritos: lista de canciones marcadas como favoritas</li>
+ * </ul>
+ *
+ * @author Valery, Jhonatan, Yeraldin, Yul
+ * @since 1.0
+ */
+
 @Entity
 @Table(name = "usuarios", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

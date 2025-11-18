@@ -81,6 +81,45 @@
 
 	<build>
 		<plugins>
+			<!-- Plugin para generar JavaDoc HTML -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.6.3</version>
+				<executions>
+					<!-- Generar JavaDoc al empacar -->
+					<execution>
+						<id>generate-javadoc</id>
+						<goals>
+							<goal>javadoc</goal>
+						</goals>
+						<phase>prepare-package</phase>
+					</execution>
+
+					<!-- Generar JavaDoc dentro del 'site' -->
+					<execution>
+						<id>attach-javadocs-to-site</id>
+						<goals>
+							<goal>javadoc</goal>
+						</goals>
+						<phase>site</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<failOnError>false</failOnError>
+					<encoding>UTF-8</encoding>
+					<docencoding>UTF-8</docencoding>
+					<charset>UTF-8</charset>
+				</configuration>
+			</plugin>
+
+
+			<!-- Plugin para generar el sitio con apidocs -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.12.1</version>
+			</plugin>
 
 			<!-- Configuración del compilador -->
 			<plugin>

@@ -7,7 +7,10 @@ import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-
+/**
+ * Servicio que mantiene un grafo ponderado de similitud entre canciones.
+ * Se utiliza Dijkstra para obtener canciones similares.
+ */
 @Service
 @Getter
 public class GrafoSimilitudServicio {
