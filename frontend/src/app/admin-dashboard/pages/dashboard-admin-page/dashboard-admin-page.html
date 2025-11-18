@@ -1,0 +1,25 @@
+<div class="bg-slate-100 antialiased text-slate-300 selection:bg-blue-600 selection:text-white min-h-screen flex">
+
+  <!-- Menú lateral fijo -->
+  <aside class="fixed left-0 top-0 h-screen w-56 bg-gray-900 text-white flex flex-col">
+
+    <!-- Header + perfil -->
+    <admin-side-menu-header></admin-side-menu-header>
+
+    <!-- Opciones del menú con scroll -->
+    <div id="nav" class="flex-1 overflow-y-auto px-6">
+      <admin-side-menu-options></admin-side-menu-options>
+    </div>
+
+  </aside>
+
+  <!-- Contenido principal con margen a la izquierda igual al ancho del menú -->
+  <main class="ml-56 flex-1 p-4 text-slate-800 min-h-screen">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>
+
+
+
+

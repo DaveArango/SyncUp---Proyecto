@@ -9,7 +9,7 @@ export const routes: Routes = [
   {
 
     path: 'auth',
-    //canActivate: [isNotAuthenticatedGuard],
+    canActivate: [isNotAuthenticatedGuard],
     loadChildren: () => import('./auth/auth.routes'),
   },
     // Rutas de administrador
@@ -23,7 +23,7 @@ export const routes: Routes = [
 
   {
     path: 'dashboard',
-    //canActivate: [authGuard],
+    canActivate: [authGuard],
     loadComponent: () => import('./songs/pages/dasboard-page/dasboard-page'),
     children:[
        {

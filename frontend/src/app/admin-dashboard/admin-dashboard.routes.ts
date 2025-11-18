@@ -2,23 +2,39 @@ import { Routes } from '@angular/router';
 
 export const adminDashboardRoutes: Routes = [
   {
-    path: 'dashboard',
+    path: 'dashboard-admin',
     loadComponent: () =>
-      import('./layouts/admin-dashboard-layout/admin-dashboard-layout.component')
+      import('./pages/dashboard-admin-page/dashboard-admin-page'),
+
+    children:[
+      {
+        path: 'gestionar-canciones',
+        loadComponent: () =>
+          import('./pages/gestionar-canciones/gestionar-canciones/gestionar-canciones'),
+
+      },
+      {
+        path: 'gestionar-usuarios',
+        loadComponent: () =>
+          import('./pages/gestionar-usuarios/gestionar-usuarios/gestionar-usuarios'),
+
+      },
+      {
+        path: 'cargar-canciones',
+        loadComponent: () =>
+          import('./pages/cargar-canciones/cargar-canciones/cargar-canciones'),
+
+      },
+      {
+        path: '**',
+        redirectTo: 'gestionar-canciones',
+      },
+
+    ]
 
   },
-  {
-    path: 'songs',
-    loadComponent: () =>
-      import('./pages/songs/songs-list/songs-list.component'),
 
-  },
-  {
-    path: 'songst',
-    loadComponent: () =>
-      import('./pages/songs/songs-form/songs-form.component'),
 
-  },
 
 ];
 export default adminDashboardRoutes;

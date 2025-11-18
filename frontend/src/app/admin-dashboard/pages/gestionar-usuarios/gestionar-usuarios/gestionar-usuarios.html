@@ -1,0 +1,29 @@
+<div class="p-4 max-w-full overflow-auto bg-white rounded shadow">
+  <h2 class="text-lg font-bold mb-4">Lista de Usuarios</h2>
+
+  <table class="min-w-full border border-gray-200 table-auto">
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="px-4 py-2 border">Nombre</th>
+        <th class="px-4 py-2 border">Username</th>
+        <th class="px-4 py-2 border">Password</th>
+        <th class="px-4 py-2 border">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users()">
+        <td class="px-4 py-2 border">{{ user.nombre }}</td>
+        <td class="px-4 py-2 border">{{ user.username }}</td>
+        <td class="px-4 py-2 border">{{ user.password }}</td>
+        <td class="px-4 py-2 border text-center">
+          <button
+            (click)="deleteUser(user.username)"
+            class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
