@@ -1,16 +1,53 @@
-<h2>Canciones en Radio</h2>
+<div class="p-6 max-w-xl mx-auto">
 
-<div *ngIf="loading()">Cargando canciones...</div>
-<div *ngIf="error()">{{ error() }}</div>
+  <h2 class="text-2xl font-bold mb-4">Radio Inteligente</h2>
 
-<div *ngFor="let song of radioSongs()">
-  <div class="border p-3 rounded mb-4">
-    <p class="font-bold text-lg">{{ song.titulo }}</p>
-    <p class="text-gray-600">Artista: {{ song.artista }}</p>
-    <p class="text-gray-600">Género: {{ song.genero }}</p>
-    <p class="text-gray-600">Año: {{ song.anio }}</p>
-    <p class="text-gray-600">Duración: {{ song.duracion }}</p>
+  <!-- Selección de la canción base -->
+  <label class="font-semibold">Selecciona una canción base:</label>
+  <select
+    class="border p-2 w-full rounded mt-1 mb-4"
+    [(ngModel)]="selectedSongId">
 
-    <audio [src]="audioSrc(song)" controls class="mt-2 w-full"></audio>
+    <option [ngValue]="null">-- Selecciona una canción --</option>
+
+    <option *ngFor="let song of allSongs()"
+            [ngValue]="song.id">
+      {{ song.titulo }} - {{ song.artista }}
+    </option>
+  </select>
+
+  <button
+    (click)="startRadio()"
+    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+    Iniciar Radio
+  </button>
+
+  <div class="mt-6" *ngIf="loading()">Cargando...</div>
+
+  <!-- Reproductor de la canción actual -->
+  <div *ngIf="currentSong()" class="mt-6 border p-4 rounded shadow">
+
+    <h3 class="text-xl font-bold">{{ currentSong()?.titulo }}</h3>
+    <p class="text-gray-600">{{ currentSong()?.artista }}</p>
+
+    <audio
+      [src]="songService.getSongAudioUrl(currentSong()?.id || 0)"
+      controls
+      autoplay
+      class="w-full mt-3"
+      (ended)="onSongEnded()">
+    </audio>
   </div>
+
+  <!-- Lista en cola -->
+  <div class="mt-6" *ngIf="queue().length > 1">
+    <h3 class="font-bold mb-3">A continuación:</h3>
+
+    <ul class="space-y-2">
+      <li *ngFor="let song of queue().slice(1)">
+        ▶️ {{ song.titulo }} - {{ song.artista }}
+      </li>
+    </ul>
+  </div>
+
 </div>
