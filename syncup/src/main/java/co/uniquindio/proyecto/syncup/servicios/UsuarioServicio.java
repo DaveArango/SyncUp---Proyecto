@@ -4,6 +4,7 @@ import co.uniquindio.proyecto.syncup.entidades.Cancion;
 import co.uniquindio.proyecto.syncup.entidades.Usuario;
 import co.uniquindio.proyecto.syncup.repositorios.CancionRepositorio;
 import co.uniquindio.proyecto.syncup.repositorios.UsuarioRepositorio;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,16 @@ public class UsuarioServicio {
     private final UsuarioRepositorio usuarioRepositorio;
     private final GrafoSocialServicio grafoSocialServicio;
     private final CancionRepositorio cancionRepositorio;
+    private Map<String, Usuario> mapaUsuarios = new HashMap<>();
+
+
+
+    // Cargar mapa al iniciar el servicio
+    @PostConstruct
+    public void cargarMapaUsuarios() {
+        usuarioRepositorio.findAll()
+                .forEach(u -> mapaUsuarios.put(u.getUsername(), u));
+    }
 
 
     public UsuarioServicio(UsuarioRepositorio usuarioRepositorio,
@@ -31,10 +42,18 @@ public class UsuarioServicio {
         if (usuarioRepositorio.existsById(usuario.getUsername())) {
             throw new RuntimeException("El nombre de usuario ya existe");
         }
+
         Usuario nuevo = usuarioRepositorio.save(usuario);
+
+        // RF-016: Insertar en HashMap
+        mapaUsuarios.put(nuevo.getUsername(), nuevo);
+
+        // Agregar al grafo social
         grafoSocialServicio.agregarUsuario(nuevo);
+
         return nuevo;
     }
+
 
     public Usuario iniciarSesion(String username, String password) {
         Usuario usuario = usuarioRepositorio.findById(username)
@@ -164,6 +183,7 @@ public class UsuarioServicio {
         return usuario.getAmigos();
     }
 
+
     @Transactional
     public void eliminarUsuario(String username) {
 
@@ -174,7 +194,15 @@ public class UsuarioServicio {
         grafoSocialServicio.eliminarConexionTotal(usuario);
 
         usuarioRepositorio.delete(usuario);
+
+        mapaUsuarios.remove(username);
+
     }
+
+    public Usuario obtenerUsuarioO1(String username) {
+        return mapaUsuarios.get(username);
+    }
+
 
 
 
