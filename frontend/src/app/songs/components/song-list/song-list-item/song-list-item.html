@@ -8,11 +8,19 @@
   <!-- 🔥 ESTE ES EL BOTÓN QUE FALTA -->
   <button
     (click)="addToFavorites(song().id)"
-    class="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition" style="
-    cursor: pointer; margin-left: 65%;"
+    class="mt-2 px-3 py-1 text-white rounded transition font-semibold"
+    [disabled]="isFavorite()"
+    [ngClass]="
+    isFavorite()
+      ? 'bg-blue-500 cursor-default'
+      : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
+  "
+    style="cursor: pointer; margin-left: 65%;"
   >
-    ❤️ Agregar a Favoritos
+    {{ isFavorite() ? '💙 Favoritos' : '❤️ Agregar a Favoritos' }}
   </button>
+
+
 
   <audio
     [src]="songService.getSongAudioUrl(song().id)"
