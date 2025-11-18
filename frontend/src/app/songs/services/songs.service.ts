@@ -81,4 +81,10 @@ getRadioSongs(id: number) {
   return this.http.get<Song[]>(`${environment.baseUrl}/usuario/canciones/radio/${id}`);
 }
 
+  addFavorite(username: string, songId: number) {
+    return this.http.post(`${environment.baseUrl}/usuario/${username}/favoritos`, {
+      id: songId
+    });
+  }
+
 }

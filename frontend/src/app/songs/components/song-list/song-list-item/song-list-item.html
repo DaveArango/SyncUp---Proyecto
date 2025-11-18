@@ -1,12 +1,20 @@
-<div class="border p-3 rounded mb-4">
+<div class="border p-3 rounded mb-4 bg-white shadow">
   <p class="font-bold text-lg">{{ song().titulo }}</p>
   <p class="text-gray-600">Artista: {{ song().artista }}</p>
   <p class="text-gray-600">Género: {{ song().genero }}</p>
   <p class="text-gray-600">Año: {{ song().anio }}</p>
   <p class="text-gray-600">Duración: {{ song().duracion }}</p>
 
+  <!-- 🔥 ESTE ES EL BOTÓN QUE FALTA -->
+  <button
+    (click)="addToFavorites(song().id)"
+    class="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+  >
+    ❤️ Agregar a Favoritos
+  </button>
+
   <audio
-    [src]="songService.getSongAudioUrl(Number(song().id))"
+    [src]="songService.getSongAudioUrl(song().id)"
     controls
     class="mt-2 w-full"
   ></audio>
