@@ -47,6 +47,7 @@ export default class FavoritesPage implements OnInit {
   }
 
   removeFromFavorites(songId: number | string) {
+    debugger;
     const currentUser = this.authService.user();
     if (!currentUser || !currentUser.username) {
       console.warn('No se puede eliminar: usuario no válido', currentUser);
