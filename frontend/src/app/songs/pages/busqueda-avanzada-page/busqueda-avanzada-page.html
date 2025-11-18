@@ -1,0 +1,54 @@
+<div class="p-5 max-w-xl mx-auto">
+
+  <h2 class="text-xl font-bold mb-4">Búsqueda Avanzada</h2>
+
+  <label>Artista</label>
+  <input
+    class="border w-full p-2 mb-2"
+    [(ngModel)]="artista"
+  >
+
+  <label>Género</label>
+  <input
+    class="border w-full p-2 mb-2"
+    [(ngModel)]="genero"
+  >
+
+  <label>Año</label>
+  <input
+    type="number"
+    class="border w-full p-2 mb-2"
+    [(ngModel)]="anio"
+  >
+
+  <label>Modo</label>
+  <select
+    class="border w-full p-2 mb-4"
+    [(ngModel)]="esAnd"
+  >
+    <option [ngValue]="true">AND (todas deben coincidir)</option>
+    <option [ngValue]="false">OR (alguna puede coincidir)</option>
+  </select>
+
+  <button
+    class="px-4 py-2 bg-blue-600 text-white rounded"
+    (click)="buscar()"
+  >
+    Buscar
+  </button>
+
+  <div class="mt-5">
+    <h3 class="text-lg font-bold">Resultados:</h3>
+
+    <div *ngIf="buscando()">Buscando...</div>
+    <div *ngIf="!buscando() && resultados().length === 0">Sin resultados</div>
+
+    <div *ngFor="let s of resultados()"
+         class="border p-3 mt-2 rounded">
+      <p><strong>{{ s.titulo }}</strong></p>
+      <p>Artista: {{ s.artista }}</p>
+      <p>Género: {{ s.genero }}</p>
+      <p>Año: {{ s.anio }}</p>
+    </div>
+  </div>
+</div>

@@ -87,4 +87,17 @@ getRadioSongs(id: number) {
     });
   }
 
+  advancedSearch(artista: string, genero: string, anio: number | null, esAnd: boolean) {
+    let params: any = {};
+
+    if (artista) params.artista = artista;
+    if (genero) params.genero = genero;
+    if (anio) params.anio = anio;
+    params.esAnd = esAnd;
+
+    return this.http.get<Song[]>(`${environment.baseUrl}/usuario/canciones/busqueda-avanzada`, {
+      params
+    });
+  }
+
 }
