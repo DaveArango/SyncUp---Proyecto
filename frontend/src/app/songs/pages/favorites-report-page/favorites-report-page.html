@@ -1,28 +1,15 @@
-<div class="favorites-container">
-  <h1>Mis canciones favoritas</h1>
+<div class="p-4">
+  <h2 class="text-lg font-bold mb-4">Reporte de Canciones Favoritas</h2>
 
-  <!-- Si NO está logeado -->
-  <div *ngIf="!userId" style="display:flex">
-    <p>⚠ Requieres iniciar sesión para ver tus canciones favoritas</p>
-    <button routerLink="/login">Iniciar sesión</button>
-  </div>
+  <p *ngIf="error()" class="text-red-500 mb-2">{{ error() }}</p>
 
-  <div *ngIf="loading">
-    <p>Cargando canciones...</p>
-  </div>
+  <button
+    *ngIf="username()"
+    (click)="downloadCSV()"
+    [disabled]="loading()"
+    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+    {{ loading() ? 'Descargando...' : 'Descargar CSV' }}
+  </button>
 
-  <div *ngIf="!loading && favorites.length === 0">
-    <p>No tienes canciones favoritas aún 🎧</p>
-  </div>
-
-  <div *ngIf="favorites.length">
-    <ul>
-      <li *ngFor="let song of favorites">
-        {{ song.titulo }} - {{ song.artista || 'Desconocido' }}
-      </li>
-    </ul>
-
-    <button (click)="downloadCSV()">📥 Descargar CSV</button>
-  </div>
+  <p *ngIf="!username()" class="text-gray-500">No hay usuario logueado</p>
 </div>
-

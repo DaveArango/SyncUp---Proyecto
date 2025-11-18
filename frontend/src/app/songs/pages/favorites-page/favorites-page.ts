@@ -15,6 +15,7 @@ export default class FavoritesPage implements OnInit {
 
   private favoritesService = inject(FavoritesService);
   private authService = inject(AuthService);
+  songService = inject(SongService);
 
   favorites = signal<Song[]>([]);
 
