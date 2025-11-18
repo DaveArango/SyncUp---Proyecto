@@ -182,38 +182,14 @@ public class CancionUsuarioControlador {
     public ResponseEntity<List<Cancion>> busquedaAvanzada(
             @RequestParam(required = false) String artista,
             @RequestParam(required = false) String genero,
-            // Aceptar varios nombres de parámetro para evitar problemas con el front
-            @RequestParam(required = false, name = "anio") String anioStr,
-            @RequestParam(required = false, name = "year") String yearStr,
-            @RequestParam(required = false, name = "a%C3%B1o") String anioEncodedStr, // 'año' url-encoded (opcional)
+            @RequestParam(required = false) Integer anio,
             @RequestParam(defaultValue = "true") boolean esAnd
     ) {
-        Integer anio = null;
-
-        // Preferir anioStr, luego yearStr, luego anioEncodedStr
-        String candidato = (anioStr != null && !anioStr.isBlank()) ? anioStr
-                : (yearStr != null && !yearStr.isBlank()) ? yearStr
-                : (anioEncodedStr != null && !anioEncodedStr.isBlank()) ? anioEncodedStr
-                : null;
-
-        if (candidato != null) {
-            try {
-                // A veces el cliente manda "2020.0" o espacios: limpiamos
-                candidato = candidato.trim();
-                if (candidato.contains(".")) {
-                    candidato = candidato.substring(0, candidato.indexOf('.'));
-                }
-                anio = Integer.valueOf(candidato);
-            } catch (NumberFormatException ex) {
-                // si no se pudo parsear, ignoramos el año (o podrías devolver 400 si prefieres)
-                anio = null;
-            }
-        }
-
         return ResponseEntity.ok(
                 cancionServicio.busquedaAvanzada(artista, genero, anio, esAnd)
         );
     }
+
 
 
 
