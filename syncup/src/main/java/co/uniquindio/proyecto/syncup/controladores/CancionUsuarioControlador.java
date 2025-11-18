@@ -189,6 +189,10 @@ public class CancionUsuarioControlador {
                 cancionServicio.busquedaAvanzada(artista, genero, anio, esAnd)
         );
     }
+
+
+
+
     @GetMapping("/listar")
     public ResponseEntity<List<Cancion>> listar() {
         return ResponseEntity.ok(cancionServicio.listarTodas());

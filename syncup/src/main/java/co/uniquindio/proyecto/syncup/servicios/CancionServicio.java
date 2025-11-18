@@ -8,7 +8,9 @@ import co.uniquindio.proyecto.syncup.repositorios.CancionRepositorio;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -251,5 +253,37 @@ public String guardarArchivo(MultipartFile archivo) {
         union.addAll(resultadoAnio);
         return new ArrayList<>(union);
     }
+
+    public int cargarCancionesDesdeArchivo(MultipartFile archivo) {
+        try {
+            List<String> lineas = new BufferedReader(
+                    new InputStreamReader(archivo.getInputStream()))
+                    .lines().toList();
+
+            int insertadas = 0;
+
+            for (String linea : lineas) {
+                String[] partes = linea.split(",");
+
+                if (partes.length < 5) continue;  // línea inválida
+
+                Cancion c = new Cancion();
+                c.setTitulo(partes[0].trim());
+                c.setArtista(partes[1].trim());
+                c.setGenero(partes[2].trim());
+                c.setAnio(Integer.parseInt(partes[3].trim()));
+                c.setDuracion(Integer.parseInt(partes[4].trim()));
+
+                agregarCancion(c);
+                insertadas++;
+            }
+
+            return insertadas;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error en carga masiva: " + e.getMessage());
+        }
+    }
+
 
 }

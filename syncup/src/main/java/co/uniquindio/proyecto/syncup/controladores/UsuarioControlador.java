@@ -198,4 +198,11 @@ public class UsuarioControlador {
         return ResponseEntity.ok(usuario.getListaFavoritos());
     }
 
+    @DeleteMapping("/eliminar/{username}")
+    public ResponseEntity<?> eliminar(@PathVariable String username) {
+        usuarioServicio.eliminarUsuario(username);
+        return ResponseEntity.ok(Map.of("mensaje", "Usuario eliminado"));
+    }
+
+
 }

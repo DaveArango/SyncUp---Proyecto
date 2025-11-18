@@ -81,4 +81,23 @@ getRadioSongs(id: number) {
   return this.http.get<Song[]>(`${environment.baseUrl}/usuario/canciones/radio/${id}`);
 }
 
+  addFavorite(username: string, songId: number) {
+    return this.http.post(`${environment.baseUrl}/usuario/${username}/favoritos`, {
+      id: songId
+    });
+  }
+
+  advancedSearch(artista: string, genero: string, anio: number | null, esAnd: boolean) {
+    let params: any = {};
+
+    if (artista) params.artista = artista;
+    if (genero) params.genero = genero;
+    if (anio) params.anio = anio;
+    params.esAnd = esAnd;
+
+    return this.http.get<Song[]>(`${environment.baseUrl}/usuario/canciones/busqueda-avanzada`, {
+      params
+    });
+  }
+
 }

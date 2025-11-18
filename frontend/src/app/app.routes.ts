@@ -41,6 +41,10 @@ export const routes: Routes = [
         loadComponent: () => import('./songs/pages/search/search'),
       },
       {
+        path: 'searchAvanzada',
+        loadComponent: () => import('./songs/pages/busqueda-avanzada-page/busqueda-avanzada-page'),
+      },
+      {
         path: 'history/:query',
         loadComponent: () => import('./songs/pages/song-history/song-history'),
       },

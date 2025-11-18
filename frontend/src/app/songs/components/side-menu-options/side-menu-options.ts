@@ -38,6 +38,12 @@ export class SideMenuOptions {
       route: '/dashboard/search',
     },
     {
+      icon: 'fa-solid fa-magnifying-glass',
+      label: 'Busqueda avanzada',
+      sublabel: 'Filtro',
+      route: '/dashboard/searchAvanzada',
+    },
+    {
       icon: 'fa-solid fa-heart',
       label: 'Favoritos',
       sublabel: 'Tus canciones favoritas',
