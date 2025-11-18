@@ -107,5 +107,12 @@ getRadioSongs(id: number) {
       `${environment.baseUrl}/usuario/canciones/descubrimiento/${username}`
     );
   }
+//http://localhost:8080/api/usuario/canciones/radio/5
+  getSongsByRadio(songId: number) {
+    return this.http.get<Song[]>(`${environment.baseUrl}/usuario/canciones/radio/${songId}`);
+  }
 
+  getAllSongs() {
+    return this.http.get<Song[]>(`${environment.baseUrl}/admin/canciones/listar`);
+  }
 }
